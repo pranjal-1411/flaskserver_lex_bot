@@ -1,7 +1,8 @@
 
 import json
 import os
-
+import time
+from flask import jsonify
 import boto3
 from python_files.attachment_processor.attachment_helper import \
     processAttachment
@@ -58,7 +59,7 @@ def generateResponse( message ,rootDir):
     messageArray = [] 
     
     if response is None : 
-        messageArray.append('Some error occured')
+        messageArray.append('Some error occured. Please try again')
         return messageArray
     
     if response['message'][0] == '{':
@@ -69,9 +70,21 @@ def generateResponse( message ,rootDir):
         messageArray.append( response['message'] )    
     
     #print( messageArray )
-    response = { "messages": messageArray }
-    return  json.dumps(response)    
-    #response syntax   
+    
+    
+    finalMessageArray = []
+    unix_timestamp = time.time()
+    
+    for message in messageArray:
+        temp_dic = {
+            "by":"server",
+            "text":message,
+            "time":unix_timestamp
+        }
+        finalMessageArray.append(temp_dic)
+    response = { "messages": finalMessageArray }
+    return  jsonify(response)
+    #response syntax from lex   
     '''      {
                 'intentName': 'string',
                 'slots': {

@@ -12,9 +12,14 @@ app.debug=True
 # change this to your own value
 app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'   
 
+
+@app.route('/test', methods=['GET','POST'])
+def temp():
+    return "Hello World"
+
+
 @app.route('/', methods=['GET','POST'])
 def index():
-#    return "Hello World"
     '''
         
             { {
@@ -35,18 +40,15 @@ def index():
         message['message']['attachment'] = {}
         files_dict = request.files.to_dict()
         for fileName,fileObject in files_dict.items():
-#            fileObject.save( fileName )
             filePath = os.path.join(rootDir,'processedAttachment', fileName)
             fileObject.save(filePath)
             message['message']['attachment']['path'] = filePath
             fileType = 'image'
             if fileObject.content_type.find('application') != -1:
                 fileType = 'file'
-            
-            message['message']['attachment']['type'] = fileType    
+            message['message']['attachment']['type'] = fileType 
+               
     return generateResponse( message,rootDir )      
  
-
-    return render_template('index.html')
 if __name__ == '__main__':
     app.run()
