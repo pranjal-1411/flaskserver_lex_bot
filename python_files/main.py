@@ -83,7 +83,7 @@ def generateResponse( message ,rootDir):
         }
         finalMessageArray.append(temp_dic)
     response = { "messages": finalMessageArray }
-    return  jsonify(response)
+    return  response
     #response syntax from lex   
     '''      {
                 'intentName': 'string',
