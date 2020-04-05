@@ -60,16 +60,21 @@ def slack_route():
         return query.get('challenge')
     
     if query['type']=='event_callback':
-        print(query)
+       
         message = None 
         lexResponse = None
         event = query['event']
         
         if event['channel_type'] != 'im':
-            return Response()
-        
+            return Response(status=200)
+
         channelId = event['channel']
-        
+       
+        if event.get('subtype') and event['subtype'] =='bot_message':
+            return Response(status=200)
+        #print(query)
+        slack.send_message( channelId, "Message Received" )
+        return Response(status=200)   
         if event.get('subtype') and event['subtype'] =='file_share':
            
             for File in event['files']:
@@ -77,7 +82,7 @@ def slack_route():
                 slack.downloadFile(File['name'],File['url_private'],File['filetype'],downloadPath) ; 
                 #slack.send_message('Bot received '+ File['name'],channelId )
                 message = createMessageDict(channelId,None,has_attachment=True,attach_path=downloadPath,attach_type=File['filetype'])
-                
+            print(query)     
             lexResponse =  generateResponse(message,rootDir)
         
         if event['type'] == 'message' and event.get('blocks') :
@@ -86,7 +91,7 @@ def slack_route():
                 print(text,'-------------')
                 #slack.send_message( channelId,'Bot received '+ text )
                 message = createMessageDict(channelId,text)
-
+            print(query) 
             lexResponse =  generateResponse(message,rootDir)
         
         if lexResponse:
@@ -95,7 +100,7 @@ def slack_route():
                 
         
     #print(request.json)    
-    return Response() 
+    return Response(status=200) 
     
 
 def createMessageDict(senderId , text , has_attachment=False, attach_path=None,attach_type=None   ):
