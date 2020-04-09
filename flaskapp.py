@@ -1,15 +1,25 @@
 from flask import Flask, render_template, request,Response,jsonify
 import json
 import python_files.slack_helper as slack
-from python_files.main import generateResponse
+from python_files.aws_helper.lex_helper import generateResponse,createMessageDict
+from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
 import sys
 import os
+import requests
+#from threading import Thread
+
+import logging
+logging.basicConfig( )
+logging.getLogger().setLevel(logging.WARNING)
+
+from datetime import datetime
 
 # Elastic Beanstalk initalization
 app = Flask(__name__)
-app.debug=True
+app.debug=False
 
 
+rootDir = app.root_path
 # change this to your own value
 app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'   
 
@@ -31,7 +41,6 @@ def index():
                 }
             }
     '''
-    rootDir = app.root_path
     senderId = request.form['userId']
     text = request.form.get('text')
    
@@ -42,7 +51,7 @@ def index():
             fileObject.save(filePath)
             fileType = 'image'
             if fileObject.content_type.find('application') != -1:
-                fileType = 'file'
+                fileType = 'pdf'
             message = createMessageDict( senderId, text,has_attachment=True,attach_path=filePath,attach_type=fileType )
     else:
         message = createMessageDict( senderId,text )
@@ -50,75 +59,60 @@ def index():
     return jsonify(generateResponse( message,rootDir ))      
  
 
-@app.route('/slack', methods=['POST'])
+@app.route('/slack/events', methods=['POST'])
 def slack_route():
     # to do  ---- check for request authenticity 
-    rootDir = app.root_path
-    query = request.json 
-    #print(query)
+    
+    query = request.json
+    
+    hdr = request.headers.get('X-Slack-Retry-Reason')
+    if hdr:
+        logging.info( f"Slack event timeout {hdr} " )
+        return Response(status=200) 
+    
     if query['type'] == 'url_verification' :
         return query.get('challenge')
     
     if query['type']=='event_callback':
        
-        message = None 
-        lexResponse = None
-        event = query['event']
-        
-        if event['channel_type'] != 'im':
+        if slack.check_event(query['event']) is False:
             return Response(status=200)
-
-        channelId = event['channel']
+        
+        message = json.dumps(query['event'])
+        publish_message_from_slack_to_sns(message,rootDir)
        
-        if event.get('subtype') and event['subtype'] =='bot_message':
-            return Response(status=200)
-        #print(query)
-        slack.send_message( channelId, "Message Received" )
-        return Response(status=200)   
-        if event.get('subtype') and event['subtype'] =='file_share':
-           
-            for File in event['files']:
-                downloadPath = os.path.join(rootDir,'processedAttachment', File['name'])
-                slack.downloadFile(File['name'],File['url_private'],File['filetype'],downloadPath) ; 
-                #slack.send_message('Bot received '+ File['name'],channelId )
-                message = createMessageDict(channelId,None,has_attachment=True,attach_path=downloadPath,attach_type=File['filetype'])
-            print(query)     
-            lexResponse =  generateResponse(message,rootDir)
-        
-        if event['type'] == 'message' and event.get('blocks') :
-            text = event['blocks'][0]['elements'][0]['elements'][0]['text']
-            if event['blocks'][0]['elements'][0]['elements'][0]['type']=='text':
-                print(text,'-------------')
-                #slack.send_message( channelId,'Bot received '+ text )
-                message = createMessageDict(channelId,text)
-            print(query) 
-            lexResponse =  generateResponse(message,rootDir)
-        
-        if lexResponse:
-            for message in lexResponse['messages']:
-                slack.send_message( channelId, message['text'] )
-                
-        
-    #print(request.json)    
     return Response(status=200) 
-    
 
-def createMessageDict(senderId , text , has_attachment=False, attach_path=None,attach_type=None   ):
+@app.route('/sns', methods = ['GET', 'POST', 'PUT'])
+def sns():
+    # AWS sends JSON with text/plain mimetype
+    try:
+        js = json.loads(request.get_data())
+    except:
+        pass
     
-    message = {} 
-    message[ 'sender' ] = { 'id': senderId  } 
-    message[ 'message'] = {
-        'text' : text
-    }
+    hdr = request.headers.get('X-Amz-Sns-Message-Type')
+  
+    if hdr == 'SubscriptionConfirmation' and 'SubscribeURL' in js:
+        r = requests.get(js['SubscribeURL'])
     
-    if has_attachment:
-       message['message']['attachment'] = {}
-       message['message']['attachment']['path'] = attach_path
-       message['message']['attachment']['type'] = attach_type
+    if hdr == 'Notification':
+       
+        message = json.loads(js['Message'])
+        slack._main_process_slack_event(message,rootDir)
+        #print(type(js['message']))
 
-    return message
 
+    return 'OK\n'
+    
 
  
 if __name__ == '__main__':
-    app.run()
+    app.run(ssl_context='adhoc')
+
+
+
+
+
+
+#Thread(target= slack._main_process_slack_event , args=(query['event'],rootDir) ).start()

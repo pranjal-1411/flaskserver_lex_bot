@@ -8,7 +8,7 @@ from python_files.attachment_processor.attachment_helper import \
     processAttachment
 
 from dotenv import load_dotenv
-
+import logging 
 botName = None
 botAlias = None
 intentName = None
@@ -21,10 +21,10 @@ def initEnvironment( rootDir ):
     intentName = os.getenv('INTENT_NAME')
     os.environ['AWS_ACCESS_KEY_ID'] =  os.getenv('AWS_ACCESS_KEY_ID')
     os.environ['AWS_SECRET_ACCESS_KEY']= os.getenv('AWS_SECRET_ACCESS_KEY')
-    os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION','ap-southeast-2')
+    os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
 
 
-def generateResponse( message ,rootDir):
+def generateResponse( message ,rootDir , source = None ):
      
     initEnvironment( rootDir )
     
@@ -45,6 +45,7 @@ def generateResponse( message ,rootDir):
         }
     } 
     '''
+    logging.info( f'Message Json received in generate response is {message}' )
     sender_id = message['sender']['id']
     response = None
     if message['message'].get('attachment'):
@@ -83,6 +84,7 @@ def generateResponse( message ,rootDir):
         }
         finalMessageArray.append(temp_dic)
     response = { "messages": finalMessageArray }
+    
     return  response
     #response syntax from lex   
     '''      {
@@ -151,6 +153,7 @@ def sendTextToLex( message , sender_id  ):
         requestAttributes={},
         inputText=message
     )
+    logging.info( f'Response from lex is {response}' )
     return response
 
 def sendSlotValuesToLex( data , sender_id ):
@@ -197,6 +200,22 @@ def sendSlotValuesToLex( data , sender_id ):
     ) 
     #print(response)
     return response
+
+def createMessageDict(senderId , text , has_attachment=False, attach_path=None,attach_type=None   ):
+    
+    message = {} 
+    message[ 'sender' ] = { 'id': senderId  } 
+    message[ 'message'] = {
+        'text' : text
+    }
+    
+    if has_attachment:
+       message['message']['attachment'] = {}
+       message['message']['attachment']['path'] = attach_path
+       message['message']['attachment']['type'] = attach_type
+
+    return message
+  
     
      
 if __name__ == "__main__":
