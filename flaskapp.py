@@ -78,8 +78,9 @@ def slack_route():
         if slack.check_event(query['event']) is False:
             return Response(status=200)
         
-        message = json.dumps(query['event'])
-        publish_message_from_slack_to_sns(message,rootDir)
+        slack._main_process_slack_event( query['event'] ,rootDir)
+        # message = json.dumps(query['event'])
+        # publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
 

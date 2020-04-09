@@ -25,7 +25,14 @@ def initEnvironment( rootDir ):
 
 
 def generateResponse( message ,rootDir , source = None ):
-     
+    
+    temp_dic = {
+            "by":"server",
+            "text":"Hi but not from lex",
+            "time":"343525252525"
+        }
+    response = { "messages": [temp_dic] }
+    return response 
     initEnvironment( rootDir )
     
     #json format of message to be followed 

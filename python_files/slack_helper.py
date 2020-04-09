@@ -50,6 +50,7 @@ def _main_process_slack_event(event,rootDir):
             send_message_to_slack( channelId, message['text'] )
 
 def send_message_to_slack(channel_id, message):
+    SLACK_TOKEN = 'xoxb-1030610122273-1044264186327-u4ONUmkEHmCEoo0fAxahtseU'
     slack_client = SlackClient(token= SLACK_TOKEN)
     #slack_client.api_call("auth_test", json = {})
     # params = {'channel':channel_id,
