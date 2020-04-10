@@ -6,6 +6,10 @@ from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
 import sys
 import os
 import requests
+from bot import Bot
+
+
+mybot = Bot()
 #from threading import Thread
 
 import logging
@@ -15,19 +19,25 @@ logging.getLogger().setLevel(logging.WARNING)
 from datetime import datetime
 
 # Elastic Beanstalk initalization
+#client = SlackClient("")
 app = Flask(__name__)
-app.debug=False
+app.debug=True
 
 
-rootDir = app.root_path
+#rootDir = app.root_path
 # change this to your own value
-app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'   
+app.secret_key = "84ZNmytARnNct3I07N2sCR4I" 
 
 
-@app.route('/test', methods=['GET','POST'])
+@app.route('/test', methods=['GET'])
 def temp():
     return "Hello World"
 
+@app.route('/auth', methods=['GET'])
+def for_auth():
+    auth_code = request.args.get('code')
+    mybot.auth(auth_code)
+    return "Authorized"
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -79,7 +89,8 @@ def slack_route():
             return Response(status=200)
         
         slack._main_process_slack_event( query['event'] ,rootDir)
-        # message = json.dumps(query['event'])
+        message = json.dumps(query['event'])
+        mybot.say_hello(message)
         # publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
@@ -109,7 +120,7 @@ def sns():
 
  
 if __name__ == '__main__':
-    app.run(ssl_context='adhoc')
+    app.run()
 
 
 
