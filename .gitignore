@@ -1,2 +1,5 @@
 .env
 *.pyc
+.vscode/
+*.txt
+venv
