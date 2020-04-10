@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request,Response,jsonify
 import json
-import python_files.slack_helper as slack
+import python_files.slack.slack_helper as slack
 from python_files.aws_helper.lex_helper import generateResponse,createMessageDict
 from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
 import sys
@@ -16,8 +16,8 @@ from datetime import datetime
 
 # Elastic Beanstalk initalization
 app = Flask(__name__)
-app.debug=False
-
+app.debug=True
+os.environ['ROOT_PATH'] = app.root_path  
 
 rootDir = app.root_path
 # change this to your own value
@@ -27,6 +27,26 @@ app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'
 @app.route('/test', methods=['GET','POST'])
 def temp():
     return "Hello World"
+
+
+@app.route('/slack/install', methods=['GET','POST'])
+def install_slack():
+    client_id = os.getenv("CLIENT_ID")
+    return render_template("install_slack.html",client_id = client_id)
+
+@app.route('/slack/redirect_auth', methods=['GET','POST'])
+def redirect_auth():
+    
+    code = request.args.get("code")
+    
+    if slack.get_auth_token( code ) is True:
+        logging.info("Auth Successful")
+    else:
+        logging.error("Auth Unsuccesful")
+    
+    # to do add authorised page
+    return render_template("index.html")
+#https://slack.com/oauth/v2/authorize?client_id=1030610122273.1064124395041&scope=incoming-webhook,im:history
 
 
 @app.route('/', methods=['GET','POST'])
@@ -77,9 +97,11 @@ def slack_route():
        
         if slack.check_event(query['event']) is False:
             return Response(status=200)
-        
-        message = json.dumps(query['event'])
-        publish_message_from_slack_to_sns(message,rootDir)
+        logging.error( query )
+        logging.error( "Message received from user" )
+        slack._main_process_slack_event(query['event'],rootDir)
+        #message = json.dumps(query['event'])
+        #publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
 
