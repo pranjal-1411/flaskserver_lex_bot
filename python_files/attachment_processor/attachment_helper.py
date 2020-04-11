@@ -5,7 +5,7 @@ import python_files.attachment_processor.getAmount as amountFinder
 import python_files.attachment_processor.getCategory as categoryFinder
 import python_files.attachment_processor.getDate as dateFinder
 import python_files.attachment_processor.getUnit as unitFinder
-
+import logging 
 
 # returns data = { 'unit':'Rs.','amount':'12','date': dateObject , 'category':'Food' }
 def processAttachment( filePath , fileType ,rootDir):
@@ -22,7 +22,7 @@ def processAttachment( filePath , fileType ,rootDir):
     category = categoryFinder.getCategory( extractTextPath )
     
     data = { 'unit':unit,'amount': amount , 'date':date , 'category':category }
-    print(data)
+    logging.info(data)
     return data
 
 if __name__ == "__main__":

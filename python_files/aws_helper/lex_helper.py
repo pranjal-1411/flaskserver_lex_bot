@@ -7,6 +7,8 @@ import boto3
 from python_files.attachment_processor.attachment_helper import \
     processAttachment
 
+from python_files.aws_helper.lex_intent_mapper import _main_map_lex_intent
+
 from dotenv import load_dotenv
 import logging 
 botName = None
@@ -18,13 +20,13 @@ def initEnvironment( rootDir ):
     load_dotenv(os.path.join(rootDir, '.env'))
     botName = os.getenv('BOT_NAME')
     botAlias = os.getenv('BOT_ALIAS')
-    intentName = os.getenv('INTENT_NAME')
+    #intentName = os.getenv('INTENT_NAME')
     os.environ['AWS_ACCESS_KEY_ID'] =  os.getenv('AWS_ACCESS_KEY_ID')
     os.environ['AWS_SECRET_ACCESS_KEY']= os.getenv('AWS_SECRET_ACCESS_KEY')
     os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
 
 
-def generateResponse( message ,rootDir , source = None ):
+def generateResponse( message ,rootDir ,query = None ,  source = None ):
      
     initEnvironment( rootDir )
     
@@ -57,6 +59,9 @@ def generateResponse( message ,rootDir , source = None ):
     elif message['message'].get('text'):
         response = sendTextToLex( message['message']['text'],sender_id )
     
+    logging.info(f'Response from lex is {response}')
+    _main_map_lex_intent( response.get('intentName') , query , source  )
+    
     messageArray = [] 
     
     if response is None : 
@@ -69,9 +74,6 @@ def generateResponse( message ,rootDir , source = None ):
             messageArray.append( message['value'] )
     else :
         messageArray.append( response['message'] )    
-    
-    #print( messageArray )
-    
     
     finalMessageArray = []
     unix_timestamp = time.time()
@@ -183,7 +185,7 @@ def sendSlotValuesToLex( data , sender_id ):
                 
         get_session_response['recentIntentSummaryView'] = temp     
     except Exception as e:
-        print('Session does not exist')
+        logging.info('Session does not exist. Starting new session')
          
     client = boto3.client('lex-runtime')
     response = client.put_session(

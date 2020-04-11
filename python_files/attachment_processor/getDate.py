@@ -37,7 +37,6 @@ def extractDate( inFile ):
         x = re.search(DatePattern, line)
         if x :
             ans = x.group()
-            print(ans)
             break 
     f.close()
     return ans

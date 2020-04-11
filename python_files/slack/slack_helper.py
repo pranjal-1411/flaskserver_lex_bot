@@ -39,7 +39,8 @@ def check_event( event ):
     
     return True
 
-def _main_process_slack_event(event,rootDir):
+def _main_process_slack_event(query,rootDir):
+    event = query['event']
     message = None 
     lexResponse = None
     
@@ -54,7 +55,7 @@ def _main_process_slack_event(event,rootDir):
             downloadFile(File['name'],File['url_private'],File['filetype'],downloadPath) ; 
             #slack.send_message('Bot received '+ File['name'],channelId )
             message = createMessageDict(channelId,None,has_attachment=True,attach_path=downloadPath,attach_type=File['filetype'])   
-        lexResponse =  generateResponse(message,rootDir)
+        lexResponse =  generateResponse(message,rootDir,query,"slack")
     
     if event['type'] == 'message' and event.get('blocks') :
         text = event['blocks'][0]['elements'][0]['elements'][0]['text']
@@ -62,7 +63,7 @@ def _main_process_slack_event(event,rootDir):
             logging.info( f'Text received from slack is {text}' )
             #slack.send_message( channelId,'Bot received '+ text )
             message = createMessageDict(channelId,text)
-        lexResponse =  generateResponse(message,rootDir)
+        lexResponse =  generateResponse(message,rootDir,query,"slack")
     team_id = event["team"]
     access_token = find_access_token(team_id)
     if lexResponse:
@@ -75,6 +76,8 @@ def find_access_token( team_id ):
     with open(path_to_oauth_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
+            if len(row) ==0 :
+                continue 
             if row[0] == team_id:
                 logging.error(row[1])
                 return row[1]
@@ -95,8 +98,24 @@ def send_message_to_slack(channel_id, message,access_token=None):
         icon_emoji=':robot_face:'
     )
 
-    logging.error( f'Response from slack.post api is {response } '  )
+    logging.info( f'Response from slack.post api is {response } '  )
     
+def get_user_info( user_id, workspace_id ):
+    access_token = find_access_token(workspace_id)
+    if access_token is None:
+        access_token = os.getenv("SLACK_TOKEN")
+    slack_client = SlackClient(token= access_token)
+    response = slack_client.api_call(
+        method = "users.info",
+        user=user_id
+    )
+    
+    if not response['ok']:
+        logging.error( "Unable to retrieve user info" )
+        logging.error(response)
+        return None   
+
+    return response['user']
 
 def downloadFile( fileName , fileUrl , extension ,  downloadPath , access_token=None):
     

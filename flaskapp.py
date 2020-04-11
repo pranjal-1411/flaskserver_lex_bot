@@ -76,7 +76,7 @@ def index():
     else:
         message = createMessageDict( senderId,text )
                    
-    return jsonify(generateResponse( message,rootDir ))      
+    return jsonify(generateResponse( message,rootDir))      
  
 
 @app.route('/slack/events', methods=['POST'])
@@ -97,10 +97,9 @@ def slack_route():
        
         if slack.check_event(query['event']) is False:
             return Response(status=200)
-        logging.error( query )
-        logging.error( "Message received from user" )
-        slack._main_process_slack_event(query['event'],rootDir)
-        #message = json.dumps(query['event'])
+        logging.info( query )
+        slack._main_process_slack_event(query,rootDir)
+        #message = json.dumps(query)
         #publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 

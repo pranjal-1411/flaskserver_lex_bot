@@ -10,7 +10,6 @@ def getAmount(inFile):
         if x and findPattern(line)  :
             ans = x.group()
     f.close()
-    print(ans)
     return ans 
 
 def findPattern( line ):
