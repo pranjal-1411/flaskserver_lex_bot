@@ -1,6 +1,7 @@
 .env
 *.pyc
 .vscode/
+__pycache__
 *.txt
 venv
-processdAttachment/*
+processdAttachment/
