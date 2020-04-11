@@ -70,7 +70,7 @@ def _main_process_slack_event(event,rootDir):
             send_message_to_slack( channelId, message['text'],access_token )
 
 def find_access_token( team_id ):
-    os.environ['ROOT_PATH'] = "/mnt/f/python3resolve" 
+    #os.environ['ROOT_PATH'] = "/mnt/f/python3resolve" 
     path_to_oauth_file = os.path.join(os.getenv('ROOT_PATH'),"python_files","slack","slack_oauth.csv")
     with open(path_to_oauth_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -98,10 +98,12 @@ def send_message_to_slack(channel_id, message,access_token=None):
     logging.error( f'Response from slack.post api is {response } '  )
     
 
-def downloadFile( fileName , fileUrl , extension ,  downloadPath):
-    print(fileUrl)
+def downloadFile( fileName , fileUrl , extension ,  downloadPath , access_token=None):
     
-    r = requests.get(fileUrl, headers={'Authorization': 'Bearer %s' % SLACK_TOKEN}) 
+    logging.info(fileUrl)
+    if access_token is None:
+        access_token = os.getenv('SLACK_TOKEN')
+    r = requests.get(fileUrl, headers={'Authorization': 'Bearer %s' % access_token}) 
  
     
     if r.status_code != 200:
