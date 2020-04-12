@@ -38,6 +38,7 @@ def install_slack():
 def redirect_auth():
     
     code = request.args.get("code")
+    state = request.args.get("state")
     
     if slack.get_auth_token( code ) is True:
         logging.info("Auth Successful")
