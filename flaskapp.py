@@ -6,6 +6,14 @@ from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
 import sys
 import os
 import requests
+
+from dotenv import load_dotenv
+
+import hmac
+import hashlib
+import base64
+import time
+import binascii
 #from threading import Thread
 
 import logging
@@ -18,11 +26,11 @@ from datetime import datetime
 app = Flask(__name__)
 app.debug=True
 os.environ['ROOT_PATH'] = app.root_path  
+load_dotenv(os.path.join(app.root_path,'.env')) 
 
-rootDir = app.root_path
 # change this to your own value
 app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'   
-
+rootDir = app.root_path
 
 @app.route('/test', methods=['GET','POST'])
 def temp():
@@ -86,9 +94,12 @@ def slack_route():
     
     query = request.json
     
+    if not verify_slack_request( request ):
+        return Response(status=403)
+    
     hdr = request.headers.get('X-Slack-Retry-Reason')
     if hdr:
-        logging.info( f"Slack event timeout {hdr} " )
+        logging.info( f"Slack event timeout {hdr}" )
         return Response(status=200) 
     
     if query['type'] == 'url_verification' :
@@ -104,6 +115,25 @@ def slack_route():
         #publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
+
+def verify_slack_request( request ):
+    key = os.getenv('SLACK_SIGNING_SECRET')
+    byte_key = binascii.unhexlify(key)
+    timestamp = request.headers['X-Slack-Request-Timestamp']
+    if abs(time.time()-int(timestamp)) > 60*5 :
+        return False 
+    req = str.encode('v0:' + str(timestamp) + ':') + request.get_data()
+    my_signature = 'v0=' + hmac.new(
+        str.encode(key),
+        req, hashlib.sha256
+    ).hexdigest()
+    
+    slack_signature = request.headers['X-Slack-Signature']
+    logging.error( my_signature )
+    logging.error( slack_signature )
+    return hmac.compare_digest( my_signature,slack_signature )
+    
+
 
 @app.route('/sns', methods = ['GET', 'POST', 'PUT'])
 def sns():
