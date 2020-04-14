@@ -9,11 +9,7 @@ import requests
 
 from dotenv import load_dotenv
 
-import hmac
-import hashlib
-import base64
-import time
-import binascii
+
 #from threading import Thread
 
 import logging
@@ -94,45 +90,30 @@ def slack_route():
     
     query = request.json
     
-    if not verify_slack_request( request ):
+    if not slack.verify_slack_request( request ):
         return Response(status=403)
     
     hdr = request.headers.get('X-Slack-Retry-Reason')
     if hdr:
-        logging.info( f"Slack event timeout {hdr}" )
+        logging.error( f"Slack event timeout {hdr}" )
         return Response(status=200) 
+    
+
     
     if query['type'] == 'url_verification' :
         return query.get('challenge')
     
     if query['type']=='event_callback':
-       
+        
         if slack.check_event(query['event']) is False:
             return Response(status=200)
-        logging.info( query )
+        
         slack._main_process_slack_event(query,rootDir)
         #message = json.dumps(query)
         #publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
 
-def verify_slack_request( request ):
-    key = os.getenv('SLACK_SIGNING_SECRET')
-    byte_key = binascii.unhexlify(key)
-    timestamp = request.headers['X-Slack-Request-Timestamp']
-    if abs(time.time()-int(timestamp)) > 60*5 :
-        return False 
-    req = str.encode('v0:' + str(timestamp) + ':') + request.get_data()
-    my_signature = 'v0=' + hmac.new(
-        str.encode(key),
-        req, hashlib.sha256
-    ).hexdigest()
-    
-    slack_signature = request.headers['X-Slack-Signature']
-    logging.error( my_signature )
-    logging.error( slack_signature )
-    return hmac.compare_digest( my_signature,slack_signature )
-    
 
 
 @app.route('/sns', methods = ['GET', 'POST', 'PUT'])

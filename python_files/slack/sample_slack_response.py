@@ -124,6 +124,26 @@ Formatted JSON Data
 }
 '''
 
+# event callback app home opened
+'''
+{
+   "token":"eeH1pT4oN0byzzkJ35B8mAS1",
+   "team_id":"T010WHY3L81",
+   "api_app_id":"A011W3NBM17",
+   "event":{
+      "type":"app_home_opened",
+      "user":"U010TRDA89Y",
+      "channel":"D0126QW0LC8",
+      "tab":"home",
+      "event_ts":"1586885306.098839"
+   },
+   "type":"event_callback",
+   "event_id":"Ev011U0VQ534",
+   "event_time":1586885306
+}
+'''
+
+
 # auth slack response 
 
 '''
