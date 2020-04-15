@@ -95,7 +95,7 @@ def slack_route():
     
     hdr = request.headers.get('X-Slack-Retry-Reason')
     if hdr:
-        logging.error( f"Slack event timeout {hdr}" )
+        logging.error   ( f"Slack event timeout {hdr}" )
         return Response(status=200) 
     
 
