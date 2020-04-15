@@ -1,6 +1,5 @@
 import requests   
 import logging
-from slackclient import SlackClient
 import python_files.slack.slack_helper as slack_helper
 
 def _main_map_lex_intent( intentName , query =None, source = None ):
@@ -33,7 +32,7 @@ def slack_intent( intentName , query ):
     logging.info(js)
     url = "https://api.asanify.com/api/attendance/slack/dev/clock"
     response = requests.post(url,json = js)                     
-    logging.info(response.json())  
+    
     
 if __name__ == "__main__":
     slack_intent("attendanceClockIn",None)  

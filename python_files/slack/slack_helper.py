@@ -1,5 +1,5 @@
 import os
-from slackclient import SlackClient
+from slack import WebClient
 import requests 
 from python_files.aws_helper.lex_helper import createMessageDict,generateResponse
 from flask import Response
@@ -16,8 +16,8 @@ import binascii
 
 def get_auth_token( temp_response_code ):
     
-    slack_client = SlackClient(os.getenv("SLACK_TOKEN"))
-    auth_response = slack_client.api_call("oauth.v2.access",
+    slack_client = WebClient(os.getenv("SLACK_TOKEN"))
+    auth_response = slack_client.oauth_v2_access(
                 client_id=os.getenv("CLIENT_ID"),
                 client_secret=os.getenv("CLIENT_SECRET"),
                 code=temp_response_code)
@@ -115,9 +115,8 @@ def find_access_token( team_id ):
 def publish_home_page( user_id,access_token=None ):
     if access_token is None:
         access_token = os.getenv("SLACK_TOKEN")
-    slack_client = SlackClient(access_token)
-    response = slack_client.api_call(
-        "views.publish",
+    slack_client = WebClient(access_token)
+    response = slack_client.views_publish(
         user_id=user_id,
         view={
    "type":"home",
@@ -221,14 +220,11 @@ def send_message_to_slack(channel_id, message,access_token=None):
     
     if access_token is None:
         access_token = os.getenv("SLACK_TOKEN")
-    slack_client = SlackClient(access_token)
+    slack_client = WebClient(access_token)
 
-    response = slack_client.api_call(
-        "chat.postMessage",
+    response = slack_client.chat_postMessage(
         channel=channel_id,
-        text=message,
-        username='Asanifybot',
-        icon_emoji=':robot_face:'
+        text=message
     )
 
     logging.info( f'Response from slack.post api is {response } '  )
@@ -237,17 +233,16 @@ def get_user_info( user_id, workspace_id ):
     access_token = find_access_token(workspace_id)
     if access_token is None:
         access_token = os.getenv("SLACK_TOKEN")
-    slack_client = SlackClient(token= access_token)
-    response = slack_client.api_call(
-        method = "users.info",
+    slack_client = WebClient(token= access_token)
+    response = slack_client.users_info(
         user=user_id
     )
-    
+
     if not response['ok']:
         logging.error( "Unable to retrieve user info" )
         logging.error(response)
         return None   
-
+    
     return response['user']
 
 def downloadFile( fileName , fileUrl , extension ,  downloadPath , access_token=None):
@@ -267,22 +262,7 @@ def downloadFile( fileName , fileUrl , extension ,  downloadPath , access_token=
 
 
 if __name__ == '__main__':
-    #send_message_to_slack("D011M87PWG3","just keep trying")
-    slack_client = SlackClient(token= "xoxb-1045423027863-1055279789379-m1DsGB0mO0dzboVxgntMm1Du")
-    #slack_client.api_call("auth_test", json = {})
-    # params = {'channel':channel_id,
-    #     'text':message,
-    #     'username':'Asanifybot',
-    #     'icon_emoji':':robot_face:' }
-    # res =requests.post( url='https://slack.com/api/chat.postMessage',data=params,headers={'Authorization': f'Bearer {SLACK_TOKEN}'} )
-    # print(res.json)
-    #logging.error( f' res is {res} ' )
-    response = slack_client.api_call(
-        method = "users.info",
-        user="U011L9L5T4J"
-    )
-
-    logging.error( f'Response from slack.post api is {response } '  )
+    pass
 
 # pRANJAL ALTER IN SACHIN WORK "U011CEW3XTR"
 # PRANJAL IN SACHIN WORK "U011L9L5T4J"
