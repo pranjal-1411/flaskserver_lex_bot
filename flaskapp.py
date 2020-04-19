@@ -51,7 +51,6 @@ def redirect_auth():
     
     # to do add authorised page
     return render_template("index.html")
-#https://slack.com/oauth/v2/authorize?client_id=1030610122273.1064124395041&scope=incoming-webhook,im:history
 
 
 @app.route('/', methods=['GET','POST'])
@@ -146,6 +145,3 @@ if __name__ == '__main__':
 
 
 
-
-
-#Thread(target= slack._main_process_slack_event , args=(query['event'],rootDir) ).start()

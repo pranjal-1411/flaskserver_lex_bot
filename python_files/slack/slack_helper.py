@@ -65,11 +65,7 @@ def _main_process_slack_event(query,rootDir):
     event = query['event']
     team_id = query["team_id"]
     access_token = find_access_token(team_id)
-    
-    if event['type'] == "app_home_opened":
-        publish_home_page( event['user'],access_token )
-        return 
-    
+        
     message = None 
     lexResponse = None
     
@@ -99,123 +95,10 @@ def _main_process_slack_event(query,rootDir):
             send_message_to_slack( channelId, message['text'],access_token )
 
 def find_access_token( team_id ):
-    #os.environ['ROOT_PATH'] = "/mnt/f/python3resolve" 
-    path_to_oauth_file = os.path.join(os.getenv('ROOT_PATH'),"python_files","slack","slack_oauth.csv")
-    with open(path_to_oauth_file) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        for row in csv_reader:
-            if len(row) ==0 :
-                continue 
-            if row[0] == team_id:
-                logging.error(row[1])
-                return row[1]
-        
+    
     return None 
 
-def publish_home_page( user_id,access_token=None ):
-    if access_token is None:
-        access_token = os.getenv("SLACK_TOKEN")
-    slack_client = WebClient(access_token)
-    response = slack_client.views_publish(
-        user_id=user_id,
-        view={
-   "type":"home",
-   "blocks":[
-      {
-         "type":"section",
-         "text":{
-            "type":"mrkdwn",
-            "text":"<https://asanify.com| Asanify> - the next gen HR & payroll tool for your business."
-         }
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"*About:* Asanify believes in the principles of #AWE: #Asanify, #WorkIsWonderful and #Engage which translate to simplicity, fairness and data driven transparency in today's world where most of the HR processes are complex, manual and menial which hinders business growth.\n\n Asanify solves for the above through a delightful user experience wherein the entire HR operations can be run directly on a chatbot. Additionally, Asanify provides rich set of people and behavioural insights for data driven people decisions.\n\nWe'd love to connect with any such company whose beliefs resonate with ours to explore how we can create value together."
-            }
-         ]
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"*Features*"
-            }
-         ]
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"• Payroll\n• Attendance Monitoring\n• Leave Management\n• Analytics\n• Tax Savings & Investments\n • Employee Management\n• And many such HR related functionalities . . ."
-            }
-         ]
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"section",
-         "text":{
-            "type":"mrkdwn",
-            "text":"Login to Asanify for more"
-         },
-         "accessory":{
-            "type":"button",
-            "text":{
-               "type":"plain_text",
-               "text":"Login",
-               "emoji":True
-            },
-            "url":"https://asanify.com/Auth/Login"
-         }
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"_By using this app you agree to our terms and policies_"
-            }
-         ]
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"<https://asanify.com/Privacy | Privacy Policy>"
-            },
-            {
-               "type":"mrkdwn",
-               "text":"<https://asanify.com/Terms | Terms & Conditions>"
-            },
-            {
-               "type":"mrkdwn",
-               "text":"<https://asanify.com/Cancellation | Cancellation & Refund Policy>"
-            }
-         ]
-      }
-   ]
-}
-    )
-    
 
-    
-    
 def send_message_to_slack(channel_id, message,access_token=None):
     
     if access_token is None:
@@ -263,8 +146,3 @@ def downloadFile( fileName , fileUrl , extension ,  downloadPath , access_token=
 
 if __name__ == '__main__':
     pass
-
-# pRANJAL ALTER IN SACHIN WORK "U011CEW3XTR"
-# PRANJAL IN SACHIN WORK "U011L9L5T4J"
-#xoxp-1045423027863-1054326197154-1046494602007-f91b2e3ef505a9bf9221ae647398e7dd
-#D011L9L6Q58
