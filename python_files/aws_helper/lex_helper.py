@@ -59,15 +59,27 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
     elif message['message'].get('text'):
         response = sendTextToLex( message['message']['text'],sender_id )
     
-    logging.info(f'Response from lex is {response}')
-    _main_map_lex_intent( response.get('intentName') , query , source  )
-    
     messageArray = [] 
-    
     if response is None : 
+        temp_dic = {
+            "by":"server",
+            "text":message,
+            "time":time.time()
+        }
         messageArray.append('Some error occured. Please try again')
-        return messageArray
+        return  {"messages":messageArray}
     
+    logging.info(f'Response from lex is {response}')
+    server_response = _main_map_lex_intent( response , query , source  )
+    
+    if server_response.get("ignoreLex"):
+        response = server_response
+    elif server_response.get("editMessage") and server_response["editMessage"] is True:
+        lex_message = response['message']
+        for i in range(server_response['variables']):
+                pass
+        response['message'] = lex_message
+        
     if response['message'][0] == '{':
         response_json = json.loads(response['message'])
         for message in response_json['messages']:
@@ -233,16 +245,4 @@ if __name__ == "__main__":
         }
     }
     generateResponse( message )
-    # {
-    #         'sender':{
-    #             'id': '098',
-    #             'name': 'Pranjal'
-    #         },
-    #         'message':{
-    #             'text':"Spent rs 100"
-    #             # 'attachment':{
-    #             #     'type': "file",
-    #             #     'url': 'http://127.0.0.1:5500/bills/bill2.pdf'   
-    #             # }
-    #         }
-    #     }
+ 
