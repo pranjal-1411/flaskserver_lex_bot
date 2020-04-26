@@ -51,7 +51,6 @@ def redirect_auth():
     
     # to do add authorised page
     return render_template("index.html")
-#https://slack.com/oauth/v2/authorize?client_id=1030610122273.1064124395041&scope=incoming-webhook,im:history
 
 
 @app.route('/', methods=['GET','POST'])
@@ -82,8 +81,40 @@ def index():
         message = createMessageDict( senderId,text )
                    
     return jsonify(generateResponse( message,rootDir))      
- 
 
+@app.route('/slack/interaction', methods=['POST'])
+def slack_interaction():
+    
+    payload = json.loads(request.form['payload'])
+    
+    channel_id = payload['container']['channel_id']
+    ts =payload['container']['message_ts']
+    action = payload['actions'][0] 
+    #logging.error(payload)
+    blocks = payload['message']['blocks']
+    if action['block_id'] != "submit":
+        ind = (int)(action['block_id'])
+        if action['type']=='static_select':
+            blocks[ind]['accessory']["placeholder"] = action['selected_option']['text']
+        if action['type']=='datepicker':
+            blocks[ind]['accessory']["initial_date"] = action['selected_date']
+        slack.update_slack_message(channel_id,ts,blocks=blocks)
+        return Response(status=200)
+    
+    if action['value'] == 'cancel':
+        slack.update_slack_message(channel_id,ts,text="Cancelled leave application" )
+        return Response(status=200)
+    
+    if action['value']=='submit':
+        leave_type = blocks[1]['accessory']['placeholder']['text']
+        start_date = blocks[2]['accessory']['initial_date']
+        end_date = blocks[3]['accessory']['initial_date']
+        text = f'Successfully applied for leave under category {leave_type} leave from {start_date} to {end_date}'
+        slack.update_slack_message(channel_id,ts,text=text)
+        return Response(status=200)
+    
+    return Response(json.dumps(temp),mimetype='application/json')
+ 
 @app.route('/slack/events', methods=['POST'])
 def slack_route():
     # to do  ---- check for request authenticity 
@@ -95,11 +126,10 @@ def slack_route():
     
     hdr = request.headers.get('X-Slack-Retry-Reason')
     if hdr:
-        logging.error   ( f"Slack event timeout {hdr}" )
+        logging.error( f"Slack event timeout {hdr}")
         return Response(status=200) 
     
 
-    
     if query['type'] == 'url_verification' :
         return query.get('challenge')
     

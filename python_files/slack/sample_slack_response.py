@@ -172,3 +172,225 @@ Formatted JSON Data
 }
 
 '''
+
+
+# interactive block action event
+
+'''
+
+{
+   "type":"block_actions",
+   "user":{
+      "id":"U010TRDA89Y",
+      "username":"pranjalguptacse",
+      "name":"pranjalguptacse",
+      "team_id":"T010WHY3L81"
+   },
+   "api_app_id":"A011W3NBM17",
+   "token":"eeH1pT4oN0byzzkJ35B8mAS1",
+   "container":{
+      "type":"message",
+      "message_ts":"1587928856.002600",
+      "channel_id":"D0126QW0LC8",
+      "is_ephemeral":False
+   },
+   "trigger_id":"1093183883748.1030610122273.df546b95de7a4c3dca12735e64e71f2e",
+   "team":{
+      "id":"T010WHY3L81",
+      "domain":"pranjal-hq"
+   },
+   "channel":{
+      "id":"D0126QW0LC8",
+      "name":"directmessage"
+   },
+   "message":{
+      "bot_id":"B0126QW0AQG",
+      "type":"message",
+      "text":"Would you like to play a game?",
+      "user":"U0126QW0C5N",
+      "ts":"1587928856.002600",
+      "team":"T010WHY3L81",
+      "blocks":[
+         {
+            "type":"section",
+            "block_id":"Nor",
+            "text":{
+               "type":"mrkdwn",
+               "text":"*Apply Leave*",
+               "verbatim":False
+            }
+         },
+         {
+            "type":"section",
+            "block_id":"+lC",
+            "text":{
+               "type":"mrkdwn",
+               "text":"Leave Type(Availaible Quotas)",
+               "verbatim":False
+            },
+            "accessory":{
+               "type":"static_select",
+               "placeholder":{
+                  "type":"plain_text",
+                  "text":"Sick",
+                  "emoji":True
+               },
+               "options":[
+                  {
+                     "text":{
+                        "type":"plain_text",
+                        "text":"Sick",
+                        "emoji":True
+                     },
+                     "value":"value-0"
+                  },
+                  {
+                     "text":{
+                        "type":"plain_text",
+                        "text":"Vacation",
+                        "emoji":True
+                     },
+                     "value":"value-1"
+                  },
+                  {
+                     "text":{
+                        "type":"plain_text",
+                        "text":"Travel",
+                        "emoji":True
+                     },
+                     "value":"value-2"
+                  }
+               ],
+               "action_id":"YSc"
+            }
+         },
+         {
+            "type":"section",
+            "block_id":"I4r+3",
+            "text":{
+               "type":"mrkdwn",
+               "text":"Select start date",
+               "verbatim":False
+            },
+            "accessory":{
+               "type":"datepicker",
+               "initial_date":"1990-04-28",
+               "placeholder":{
+                  "type":"plain_text",
+                  "text":"Select a date",
+                  "emoji":True
+               },
+               "action_id":"2Omxo"
+            }
+         },
+         {
+            "type":"section",
+            "block_id":"13qR",
+            "text":{
+               "type":"mrkdwn",
+               "text":"Select end date.",
+               "verbatim":False
+            },
+            "accessory":{
+               "type":"datepicker",
+               "initial_date":"1990-04-28",
+               "placeholder":{
+                  "type":"plain_text",
+                  "text":"Select a date",
+                  "emoji":True
+               },
+               "action_id":"BS/"
+            }
+         },
+         {
+            "type":"actions",
+            "block_id":"pgPdC",
+            "elements":[
+               {
+                  "type":"button",
+                  "action_id":"q3iaw",
+                  "text":{
+                     "type":"plain_text",
+                     "text":"Cancel",
+                     "emoji":True
+                  },
+                  "style":"danger",
+                  "value":"click_me_123"
+               },
+               {
+                  "type":"button",
+                  "action_id":"O2sj",
+                  "text":{
+                     "type":"plain_text",
+                     "text":"Submit",
+                     "emoji":True
+                  },
+                  "style":"primary",
+                  "value":"click_me_123",
+                  "confirm":{
+                     "title":{
+                        "type":"plain_text",
+                        "text":"Are you sure?",
+                        "emoji":True
+                     },
+                     "text":{
+                        "type":"mrkdwn",
+                        "text":"Apply for leave ?",
+                        "verbatim":False
+                     },
+                     "confirm":{
+                        "type":"plain_text",
+                        "text":"Do it",
+                        "emoji":True
+                     },
+                     "deny":{
+                        "type":"plain_text",
+                        "text":"Stop, I've changed my mind!",
+                        "emoji":True
+                     }
+                  }
+               }
+            ]
+         }
+      ]
+   },
+   "response_url":"https://hooks.slack.com/actions/T010WHY3L81/1087015122802/rr2f53sZS8GnO2uJWRW6TW8d",
+   "actions":[
+      {
+         "confirm":{
+            "title":{
+               "type":"plain_text",
+               "text":"Are you sure?",
+               "emoji":True
+            },
+            "text":{
+               "type":"mrkdwn",
+               "text":"Apply for leave ?",
+               "verbatim":False
+            },
+            "confirm":{
+               "type":"plain_text",
+               "text":"Do it",
+               "emoji":True
+            },
+            "deny":{
+               "type":"plain_text",
+               "text":"Stop, I've changed my mind!",
+               "emoji":True
+            }
+         },
+         "action_id":"O2sj",
+         "text":{
+            "type":"plain_text",
+            "text":"Submit",
+            "emoji":True
+         },
+         "value":"click_me_123",
+         "style":"primary",
+         "type":"button",
+         "action_ts":"1587928904.302058"
+      }
+   ]
+}
+
+'''

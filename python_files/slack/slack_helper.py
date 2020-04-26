@@ -59,6 +59,8 @@ def check_event( event ):
     if event.get('subtype') and event['subtype'] =='bot_message':
         return False
     
+    if event.get('bot_id') is not None: return False 
+    
     return True
 
 def _main_process_slack_event(query,rootDir):
@@ -72,7 +74,7 @@ def _main_process_slack_event(query,rootDir):
     
     message = None 
     lexResponse = None
-    
+    #logging.error(query)
     if check_event(event) is False:
         return 
     
@@ -86,6 +88,7 @@ def _main_process_slack_event(query,rootDir):
             message = createMessageDict(channelId,None,has_attachment=True,attach_path=downloadPath,attach_type=File['filetype'])   
         lexResponse =  generateResponse(message,rootDir,query,"slack")
     
+        
     if event['type'] == 'message' and event.get('blocks') :
         text = event['blocks'][0]['elements'][0]['elements'][0]['text']
         if event['blocks'][0]['elements'][0]['elements'][0]['type']=='text':
@@ -214,7 +217,21 @@ def publish_home_page( user_id,access_token=None ):
     )
     
 
+def update_slack_message(channel_id,ts, text=None,blocks=None,access_token=None):
+    if access_token is None:
+        access_token = os.getenv("SLACK_TOKEN")
+    slack_client = WebClient(access_token)
     
+    response = slack_client.chat_update(
+        as_user=True,
+        ok= True,
+    channel= channel_id,
+    ts=ts,
+    text= text,
+    blocks=blocks,
+    )
+    
+    logging.error(response)   
     
 def send_message_to_slack(channel_id, message,access_token=None):
     
@@ -224,7 +241,133 @@ def send_message_to_slack(channel_id, message,access_token=None):
 
     response = slack_client.chat_postMessage(
         channel=channel_id,
-        text=message
+        text= "Would you like to play a game?",
+        blocks= [
+		{   "block_id":"0",
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*Apply Leave*"
+			}
+		},
+		{   "block_id":"1",
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Leave Type(Availaible Quotas)"
+			},
+			"accessory": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Sick",
+					"emoji": True
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Sick",
+							"emoji": True
+						},
+						"value": "value-0"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Vacation",
+							"emoji": True
+						},
+						"value": "value-1"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Travel",
+							"emoji": True
+						},
+						"value": "value-2"
+					}
+				]
+			}
+		},
+		{   "block_id":"2",
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Select start date"
+			},
+			"accessory": {
+				"type": "datepicker",
+				"initial_date": "1990-04-28",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select a date",
+					"emoji": True
+				}
+			}
+		},
+		{   "block_id":"3",
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Select end date."
+			},
+			"accessory": {
+				"type": "datepicker",
+				"initial_date": "1990-04-28",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select a date",
+					"emoji": True
+				}
+			}
+		},
+		{   "block_id":"submit",
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"emoji": True,
+						"text": "Cancel"
+					},
+					"style": "danger",
+					"value": "cancel"
+				},
+				{   
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"emoji": True,
+						"text": "Submit"
+					},
+					"style": "primary",
+					"value": "submit",
+                    "confirm": {
+						"title": {
+							"type": "plain_text",
+							"text": "Are you sure?"
+						},
+						"text": {
+							"type": "mrkdwn",
+							"text": "Apply for leave ?"
+						},
+						"confirm": {
+							"type": "plain_text",
+							"text": "Do it"
+						},
+						"deny": {
+							"type": "plain_text",
+							"text": "Stop, I've changed my mind!"
+						}
+					}
+				}
+			]
+		}
+	]
+        #text=message
     )
 
     logging.info( f'Response from slack.post api is {response } '  )
