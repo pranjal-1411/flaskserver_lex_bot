@@ -47,7 +47,7 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
         }
     } 
     '''
-    logging.info( f'Message Json received in generate response is {message}' )
+    logging.error( f'Message Json received in generate response is {message}' )
     sender_id = message['sender']['id']
     response = None
     if message['message'].get('attachment'):
@@ -72,7 +72,7 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
     logging.info(f'Response from lex is {response}')
     server_response = _main_map_lex_intent( response , query , source  )
     
-    if server_response.get("ignoreLex"):
+    if server_response.get("ignoreLex") and server_response["ignoreLex"] is True:
         response = server_response
     elif server_response.get("editMessage") and server_response["editMessage"] is True:
         lex_message = response['message']
@@ -80,11 +80,11 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
                 pass
         response['message'] = lex_message
         
-    if response['message'][0] == '{':
+    if response.get('message') and  response['message'][0] == '{':
         response_json = json.loads(response['message'])
         for message in response_json['messages']:
             messageArray.append( message['value'] )
-    else :
+    elif response.get('message')  :
         messageArray.append( response['message'] )    
     
     finalMessageArray = []

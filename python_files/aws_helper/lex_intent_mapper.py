@@ -1,6 +1,7 @@
 import requests   
 import logging
 import python_files.slack.slack_helper as slack_helper
+import python_files.slack.slack_intent_action as slack_intent_action
 
 def _main_map_lex_intent( lex_response , query =None, source = None ):
     if query is None : return {}
@@ -10,16 +11,24 @@ def _main_map_lex_intent( lex_response , query =None, source = None ):
              
 
 def slack_intent( lex_response , query ):
-    
-    logging.error("Successful ------------------------- ")
-    response = {
-        "ignoreLex":True,
-        "message":"Respose from Asanify and not from lex"
-    }
-    return response
-    # intent_list = [ "attendanceClockIn","attendanceClockOut" ]
+    intentName ='ApplyLeave' #lex_response['intentName']
+    # logging.error("Successful ------------------------- ")
+    # # response = {
+    # #     "ignoreLex":True,
+    # #     "message":"Respose from Asanify and not from lex"
+    # # }
+    # # return response
+    # intent_list = [ "attendanceClockIn","attendanceClockOut","ApplyLeave" ]
     # if intentName not in intent_list:
-    #     return 
+    #     response = { "ignoreLex":False } 
+    #     return response
+    
+    if intentName == 'ApplyLeave':
+        slack_intent_action.apply_leave(query)
+        response = {"ignoreLex":True}
+        return response
+        
+    
     # logging.info( f'Intent Mapped is {intentName}' )
     # workspace_id = query['team_id'] #"T011BCF0TRD" for checkbot in pranjal ws
     # user_id = query['event']['user'] #"U010TRDA89Y"
@@ -39,6 +48,9 @@ def slack_intent( lex_response , query ):
     # logging.info(js)
     # url = "https://api.asanify.com/api/attendance/slack/dev/clock"
     # response = requests.post(url,json = js)                     
+
+
+
     
     
 if __name__ == "__main__":

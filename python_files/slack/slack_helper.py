@@ -67,7 +67,7 @@ def _main_process_slack_event(query,rootDir):
     event = query['event']
     team_id = query["team_id"]
     access_token = find_access_token(team_id)
-    
+    logging.info(f'Message from slack to sns is {query}')
     if event['type'] == "app_home_opened":
         publish_home_page( event['user'],access_token )
         return 
@@ -87,12 +87,11 @@ def _main_process_slack_event(query,rootDir):
             #slack.send_message('Bot received '+ File['name'],channelId )
             message = createMessageDict(channelId,None,has_attachment=True,attach_path=downloadPath,attach_type=File['filetype'])   
         lexResponse =  generateResponse(message,rootDir,query,"slack")
-    
-        
+      
     if event['type'] == 'message' and event.get('blocks') :
         text = event['blocks'][0]['elements'][0]['elements'][0]['text']
         if event['blocks'][0]['elements'][0]['elements'][0]['type']=='text':
-            logging.info( f'Text received from slack is {text}' )
+            logging.error( f'Text received from slack is {text}' )
             #slack.send_message( channelId,'Bot received '+ text )
             message = createMessageDict(channelId,text)
         lexResponse =  generateResponse(message,rootDir,query,"slack")
@@ -115,107 +114,6 @@ def find_access_token( team_id ):
         
     return None 
 
-def publish_home_page( user_id,access_token=None ):
-    if access_token is None:
-        access_token = os.getenv("SLACK_TOKEN")
-    slack_client = WebClient(access_token)
-    response = slack_client.views_publish(
-        user_id=user_id,
-        view={
-   "type":"home",
-   "blocks":[
-      {
-         "type":"section",
-         "text":{
-            "type":"mrkdwn",
-            "text":"<https://asanify.com| Asanify> - the next gen HR & payroll tool for your business."
-         }
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"*About:* Asanify believes in the principles of #AWE: #Asanify, #WorkIsWonderful and #Engage which translate to simplicity, fairness and data driven transparency in today's world where most of the HR processes are complex, manual and menial which hinders business growth.\n\n Asanify solves for the above through a delightful user experience wherein the entire HR operations can be run directly on a chatbot. Additionally, Asanify provides rich set of people and behavioural insights for data driven people decisions.\n\nWe'd love to connect with any such company whose beliefs resonate with ours to explore how we can create value together."
-            }
-         ]
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"*Features*"
-            }
-         ]
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"• Payroll\n• Attendance Monitoring\n• Leave Management\n• Analytics\n• Tax Savings & Investments\n • Employee Management\n• And many such HR related functionalities . . ."
-            }
-         ]
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"section",
-         "text":{
-            "type":"mrkdwn",
-            "text":"Login to Asanify for more"
-         },
-         "accessory":{
-            "type":"button",
-            "text":{
-               "type":"plain_text",
-               "text":"Login",
-               "emoji":True
-            },
-            "url":"https://asanify.com/Auth/Login"
-         }
-      },
-      {
-         "type":"divider"
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"_By using this app you agree to our terms and policies_"
-            }
-         ]
-      },
-      {
-         "type":"context",
-         "elements":[
-            {
-               "type":"mrkdwn",
-               "text":"<https://asanify.com/Privacy | Privacy Policy>"
-            },
-            {
-               "type":"mrkdwn",
-               "text":"<https://asanify.com/Terms | Terms & Conditions>"
-            },
-            {
-               "type":"mrkdwn",
-               "text":"<https://asanify.com/Cancellation | Cancellation & Refund Policy>"
-            }
-         ]
-      }
-   ]
-}
-    )
-    
 
 def update_slack_message(channel_id,ts, text=None,blocks=None,access_token=None):
     if access_token is None:
@@ -228,12 +126,11 @@ def update_slack_message(channel_id,ts, text=None,blocks=None,access_token=None)
     channel= channel_id,
     ts=ts,
     text= text,
-    blocks=blocks,
+    blocks=blocks,  
     )
+    logging.info(f'Response on slack update message is {response}')   
     
-    logging.error(response)   
-    
-def send_message_to_slack(channel_id, message,access_token=None):
+def send_message_to_slack(channel_id, text=None,blocks = None,access_token=None):
     
     if access_token is None:
         access_token = os.getenv("SLACK_TOKEN")
@@ -241,133 +138,8 @@ def send_message_to_slack(channel_id, message,access_token=None):
 
     response = slack_client.chat_postMessage(
         channel=channel_id,
-        text= "Would you like to play a game?",
-        blocks= [
-		{   "block_id":"0",
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "*Apply Leave*"
-			}
-		},
-		{   "block_id":"1",
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "Leave Type(Availaible Quotas)"
-			},
-			"accessory": {
-				"type": "static_select",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Sick",
-					"emoji": True
-				},
-				"options": [
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Sick",
-							"emoji": True
-						},
-						"value": "value-0"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Vacation",
-							"emoji": True
-						},
-						"value": "value-1"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Travel",
-							"emoji": True
-						},
-						"value": "value-2"
-					}
-				]
-			}
-		},
-		{   "block_id":"2",
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "Select start date"
-			},
-			"accessory": {
-				"type": "datepicker",
-				"initial_date": "1990-04-28",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Select a date",
-					"emoji": True
-				}
-			}
-		},
-		{   "block_id":"3",
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "Select end date."
-			},
-			"accessory": {
-				"type": "datepicker",
-				"initial_date": "1990-04-28",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Select a date",
-					"emoji": True
-				}
-			}
-		},
-		{   "block_id":"submit",
-			"type": "actions",
-			"elements": [
-				{
-					"type": "button",
-					"text": {
-						"type": "plain_text",
-						"emoji": True,
-						"text": "Cancel"
-					},
-					"style": "danger",
-					"value": "cancel"
-				},
-				{   
-					"type": "button",
-					"text": {
-						"type": "plain_text",
-						"emoji": True,
-						"text": "Submit"
-					},
-					"style": "primary",
-					"value": "submit",
-                    "confirm": {
-						"title": {
-							"type": "plain_text",
-							"text": "Are you sure?"
-						},
-						"text": {
-							"type": "mrkdwn",
-							"text": "Apply for leave ?"
-						},
-						"confirm": {
-							"type": "plain_text",
-							"text": "Do it"
-						},
-						"deny": {
-							"type": "plain_text",
-							"text": "Stop, I've changed my mind!"
-						}
-					}
-				}
-			]
-		}
-	]
-        #text=message
+        text= text,
+        blocks= blocks
     )
 
     logging.info( f'Response from slack.post api is {response } '  )
@@ -402,6 +174,107 @@ def downloadFile( fileName , fileUrl , extension ,  downloadPath , access_token=
     
     with open(downloadPath,'wb') as f: 
         f.write(r.content) 
+
+def publish_home_page( user_id,access_token=None ):
+    if access_token is None:
+        access_token = os.getenv("SLACK_TOKEN")
+    slack_client = WebClient(access_token)
+    response = slack_client.views_publish(
+        user_id=user_id,
+        view={
+   "type":"home",
+   "blocks":[
+                {
+                    "type":"section",
+                    "text":{
+                        "type":"mrkdwn",
+                        "text":"<https://asanify.com| Asanify> - the next gen HR & payroll tool for your business."
+                    }
+                },
+                {
+                    "type":"divider"
+                },
+                {
+                    "type":"context",
+                    "elements":[
+                        {
+                        "type":"mrkdwn",
+                        "text":"*About:* Asanify believes in the principles of #AWE: #Asanify, #WorkIsWonderful and #Engage which translate to simplicity, fairness and data driven transparency in today's world where most of the HR processes are complex, manual and menial which hinders business growth.\n\n Asanify solves for the above through a delightful user experience wherein the entire HR operations can be run directly on a chatbot. Additionally, Asanify provides rich set of people and behavioural insights for data driven people decisions.\n\nWe'd love to connect with any such company whose beliefs resonate with ours to explore how we can create value together."
+                        }
+                    ]
+                },
+                {
+                    "type":"divider"
+                },
+                {
+                    "type":"context",
+                    "elements":[
+                        {
+                        "type":"mrkdwn",
+                        "text":"*Features*"
+                        }
+                    ]
+                },
+                {
+                    "type":"context",
+                    "elements":[
+                        {
+                        "type":"mrkdwn",
+                        "text":"• Payroll\n• Attendance Monitoring\n• Leave Management\n• Analytics\n• Tax Savings & Investments\n • Employee Management\n• And many such HR related functionalities . . ."
+                        }
+                    ]
+                },
+                {
+                    "type":"divider"
+                },
+                {
+                    "type":"section",
+                    "text":{
+                        "type":"mrkdwn",
+                        "text":"Login to Asanify for more"
+                    },
+                    "accessory":{
+                        "type":"button",
+                        "text":{
+                        "type":"plain_text",
+                        "text":"Login",
+                        "emoji":True
+                        },
+                        "url":"https://asanify.com/Auth/Login"
+                    }
+                },
+                {
+                    "type":"divider"
+                },
+                {
+                    "type":"context",
+                    "elements":[
+                        {
+                        "type":"mrkdwn",
+                        "text":"_By using this app you agree to our terms and policies_"
+                        }
+                    ]
+                },
+                {
+                    "type":"context",
+                    "elements":[
+                        {
+                        "type":"mrkdwn",
+                        "text":"<https://asanify.com/Privacy | Privacy Policy>"
+                        },
+                        {
+                        "type":"mrkdwn",
+                        "text":"<https://asanify.com/Terms | Terms & Conditions>"
+                        },
+                        {
+                        "type":"mrkdwn",
+                        "text":"<https://asanify.com/Cancellation | Cancellation & Refund Policy>"
+                        }
+                    ]
+                }
+            ]
+            }
+    )
 
 
 if __name__ == '__main__':

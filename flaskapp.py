@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request,Response,jsonify
 import json
 import python_files.slack.slack_helper as slack
+import python_files.slack.interaction_handler as slack_interaction_handler
 from python_files.aws_helper.lex_helper import generateResponse,createMessageDict
 from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
 import sys
@@ -65,6 +66,7 @@ def index():
                 }
             }
     '''
+  
     senderId = request.form['userId']
     text = request.form.get('text')
    
@@ -86,35 +88,9 @@ def index():
 def slack_interaction():
     
     payload = json.loads(request.form['payload'])
+    return slack_interaction_handler.handle_interaction_main(payload)
     
-    channel_id = payload['container']['channel_id']
-    ts =payload['container']['message_ts']
-    action = payload['actions'][0] 
-    #logging.error(payload)
-    blocks = payload['message']['blocks']
-    if action['block_id'] != "submit":
-        ind = (int)(action['block_id'])
-        if action['type']=='static_select':
-            blocks[ind]['accessory']["placeholder"] = action['selected_option']['text']
-        if action['type']=='datepicker':
-            blocks[ind]['accessory']["initial_date"] = action['selected_date']
-        slack.update_slack_message(channel_id,ts,blocks=blocks)
-        return Response(status=200)
     
-    if action['value'] == 'cancel':
-        slack.update_slack_message(channel_id,ts,text="Cancelled leave application" )
-        return Response(status=200)
-    
-    if action['value']=='submit':
-        leave_type = blocks[1]['accessory']['placeholder']['text']
-        start_date = blocks[2]['accessory']['initial_date']
-        end_date = blocks[3]['accessory']['initial_date']
-        text = f'Successfully applied for leave under category {leave_type} leave from {start_date} to {end_date}'
-        slack.update_slack_message(channel_id,ts,text=text)
-        return Response(status=200)
-    
-    return Response(json.dumps(temp),mimetype='application/json')
- 
 @app.route('/slack/events', methods=['POST'])
 def slack_route():
     # to do  ---- check for request authenticity 
@@ -162,6 +138,7 @@ def sns():
     if hdr == 'Notification':
        
         message = json.loads(js['Message'])
+        logging.info(f'Message send to sns is {message}')
         slack._main_process_slack_event(message,rootDir)
         #print(type(js['message']))
 
