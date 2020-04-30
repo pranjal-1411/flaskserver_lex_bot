@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request,Response,jsonify
 import json
 import python_files.slack.slack_helper as slack
+import python_files.slack.interaction_handler as slack_interaction_handler
 from python_files.aws_helper.lex_helper import generateResponse,createMessageDict
 from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
 import sys
@@ -55,16 +56,7 @@ def redirect_auth():
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    '''
-        
-            { {
-                "by":"server",
-                "userId":'123',
-                "text":"Hello, what would you like to do?",
-                "time":"UNIX_TIMESTAMP"
-                }
-            }
-    '''
+
     senderId = request.form['userId']
     text = request.form.get('text')
    
@@ -81,8 +73,14 @@ def index():
         message = createMessageDict( senderId,text )
                    
     return jsonify(generateResponse( message,rootDir))      
- 
 
+@app.route('/slack/interaction', methods=['POST'])
+def slack_interaction():
+    
+    payload = json.loads(request.form['payload'])
+    return slack_interaction_handler.handle_interaction_main(payload)
+    
+    
 @app.route('/slack/events', methods=['POST'])
 def slack_route():
     # to do  ---- check for request authenticity 
@@ -94,11 +92,10 @@ def slack_route():
     
     hdr = request.headers.get('X-Slack-Retry-Reason')
     if hdr:
-        logging.error   ( f"Slack event timeout {hdr}" )
+        logging.error( f"Slack event timeout {hdr}")
         return Response(status=200) 
     
 
-    
     if query['type'] == 'url_verification' :
         return query.get('challenge')
     
@@ -131,6 +128,7 @@ def sns():
     if hdr == 'Notification':
        
         message = json.loads(js['Message'])
+        logging.info(f'Message send to sns is {message}')
         slack._main_process_slack_event(message,rootDir)
         #print(type(js['message']))
 
@@ -141,7 +139,4 @@ def sns():
  
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
-
-
-
 
