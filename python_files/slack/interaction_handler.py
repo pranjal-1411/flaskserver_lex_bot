@@ -50,7 +50,8 @@ def interaction_apply_leave(payload):
 
 def send_leave_request_to_asanify(emp_code,frm_date,to_date,policy_id,policy_name):
     
-    url ="https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/request"
+    #url ="https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/request"
+    url = "https://24ac1a95-f9f1-40b1-88b0-399710d4da94.mock.pstmn.io/api/leave/request"
     js ={
         "ASAN_EMPCODE":emp_code,
         "FROM_DATE":frm_date,
@@ -65,4 +66,4 @@ def send_leave_request_to_asanify(emp_code,frm_date,to_date,policy_id,policy_nam
     if response.status_code == 200:
         return f'Successfully applied for leave under category {policy_name} leave from {frm_date} to {to_date}'
     else:
-        return 'Some error occured while applying for leave'
+        return response.json()['msg']
