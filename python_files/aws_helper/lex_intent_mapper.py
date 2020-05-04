@@ -50,7 +50,6 @@ def slack_intent( lex_response , query ):
     # response = requests.post(url,json = js)                     
 
 
-
     
     
 if __name__ == "__main__":

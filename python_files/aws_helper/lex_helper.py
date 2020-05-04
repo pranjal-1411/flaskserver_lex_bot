@@ -47,7 +47,7 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
         }
     } 
     '''
-    logging.error( f'Message Json received in generate response is {message}' )
+    logging.info( f'Message Json received in generate response is {message}' )
     sender_id = message['sender']['id']
     response = None
     if message['message'].get('attachment'):

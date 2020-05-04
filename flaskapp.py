@@ -87,6 +87,8 @@ def index():
 @app.route('/slack/interaction', methods=['POST'])
 def slack_interaction():
     
+    if request.form.get('payload') is None: return Response(status=200)
+    
     payload = json.loads(request.form['payload'])
     return slack_interaction_handler.handle_interaction_main(payload)
     

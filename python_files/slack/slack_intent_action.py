@@ -1,10 +1,12 @@
 
 import python_files.slack.slack_helper as slack_helper
+import requests
 import logging
 
 def apply_leave(query):
     
     channel_id = query['event']['channel']
+    options = get_leave_options( channel_id )
     blocks= [
 		{   "block_id":"ApplyLeave",
 			"type": "section",
@@ -26,32 +28,7 @@ def apply_leave(query):
 					"text": "Sick",
 					"emoji": True
 				},
-				"options": [
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Sick",
-							"emoji": True
-						},
-						"value": "value-0"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Vacation",
-							"emoji": True
-						},
-						"value": "value-1"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Travel",
-							"emoji": True
-						},
-						"value": "value-2"
-					}
-				]
+				"options": options
 			}
 		},
 		{   "block_id":"2",
@@ -132,8 +109,31 @@ def apply_leave(query):
 	]
     access_token =None #slack_helper.find_access_token(query['team_id'])
     slack_helper.send_message_to_slack(channel_id,blocks=blocks,access_token=access_token)
+   
+     
+def get_leave_options( emp_code ):
     
-    
+	url = "https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/balance/read"
+	js = {
+			"ASAN_EMPCODE": emp_code      
+	}
+	response = requests.post(url=url,json=js)
+	options = [] 
+	if response.status_code==200:
+		for item in response.json()['LEAVE_BALANCES']:
+			leave = f'{item["POLICY_NAME"]} (Avl: {item["AVAILABLE"]})'
+			sample_option = {
+							"text": {
+								"type": "plain_text",
+								"text": leave,
+								"emoji": True
+							},
+							"value": item["POLICY_ID"]
+						}
+			options.append(sample_option)
+
+	return options
+        
 def attendanceClockIn(query):
     pass
 def attendanceClockOut(query): 
