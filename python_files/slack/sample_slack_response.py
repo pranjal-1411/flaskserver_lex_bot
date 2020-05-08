@@ -190,11 +190,11 @@ Formatted JSON Data
    "token":"eeH1pT4oN0byzzkJ35B8mAS1",
    "container":{
       "type":"message",
-      "message_ts":"1587928856.002600",
+      "message_ts":"1588863588.001000",
       "channel_id":"D0126QW0LC8",
       "is_ephemeral":False
    },
-   "trigger_id":"1093183883748.1030610122273.df546b95de7a4c3dca12735e64e71f2e",
+   "trigger_id":"1133972427488.1030610122273.11edac8f7616a0ec6ace8a9e40738290",
    "team":{
       "id":"T010WHY3L81",
       "domain":"pranjal-hq"
@@ -206,14 +206,14 @@ Formatted JSON Data
    "message":{
       "bot_id":"B0126QW0AQG",
       "type":"message",
-      "text":"Would you like to play a game?",
+      "text":"This content can't be displayed.",
       "user":"U0126QW0C5N",
-      "ts":"1587928856.002600",
+      "ts":"1588863588.001000",
       "team":"T010WHY3L81",
       "blocks":[
          {
             "type":"section",
-            "block_id":"Nor",
+            "block_id":"ApplyLeave",
             "text":{
                "type":"mrkdwn",
                "text":"*Apply Leave*",
@@ -222,7 +222,7 @@ Formatted JSON Data
          },
          {
             "type":"section",
-            "block_id":"+lC",
+            "block_id":"type",
             "text":{
                "type":"mrkdwn",
                "text":"Leave Type(Availaible Quotas)",
@@ -239,34 +239,26 @@ Formatted JSON Data
                   {
                      "text":{
                         "type":"plain_text",
-                        "text":"Sick",
+                        "text":"ravel Leave (Avl: 10)",
                         "emoji":True
                      },
-                     "value":"value-0"
+                     "value":"XXXX_ID_XXXX"
                   },
                   {
                      "text":{
                         "type":"plain_text",
-                        "text":"Vacation",
+                        "text":"Sick Leave (Avl: 10)",
                         "emoji":True
                      },
-                     "value":"value-1"
-                  },
-                  {
-                     "text":{
-                        "type":"plain_text",
-                        "text":"Travel",
-                        "emoji":True
-                     },
-                     "value":"value-2"
+                     "value":"XXXX_ID_XXXX"
                   }
                ],
-               "action_id":"YSc"
+               "action_id":"AoFX"
             }
          },
          {
             "type":"section",
-            "block_id":"I4r+3",
+            "block_id":"fdate",
             "text":{
                "type":"mrkdwn",
                "text":"Select start date",
@@ -280,12 +272,12 @@ Formatted JSON Data
                   "text":"Select a date",
                   "emoji":True
                },
-               "action_id":"2Omxo"
+               "action_id":"n1DSG"
             }
          },
          {
             "type":"section",
-            "block_id":"13qR",
+            "block_id":"tdate",
             "text":{
                "type":"mrkdwn",
                "text":"Select end date.",
@@ -299,34 +291,34 @@ Formatted JSON Data
                   "text":"Select a date",
                   "emoji":True
                },
-               "action_id":"BS/"
+               "action_id":"OQqjJ"
             }
          },
          {
             "type":"actions",
-            "block_id":"pgPdC",
+            "block_id":"submit",
             "elements":[
                {
                   "type":"button",
-                  "action_id":"q3iaw",
+                  "action_id":"4TQLD",
                   "text":{
                      "type":"plain_text",
                      "text":"Cancel",
                      "emoji":True
                   },
                   "style":"danger",
-                  "value":"click_me_123"
+                  "value":"cancel"
                },
                {
                   "type":"button",
-                  "action_id":"O2sj",
+                  "action_id":"fYAM",
                   "text":{
                      "type":"plain_text",
                      "text":"Submit",
                      "emoji":True
                   },
                   "style":"primary",
-                  "value":"click_me_123",
+                  "value":"submit",
                   "confirm":{
                      "title":{
                         "type":"plain_text",
@@ -354,41 +346,26 @@ Formatted JSON Data
          }
       ]
    },
-   "response_url":"https://hooks.slack.com/actions/T010WHY3L81/1087015122802/rr2f53sZS8GnO2uJWRW6TW8d",
+   "response_url":"https://hooks.slack.com/actions/T010WHY3L81/1116313793572/BERVcqmLf6F4k28okq7U1uv5",
    "actions":[
       {
-         "confirm":{
-            "title":{
-               "type":"plain_text",
-               "text":"Are you sure?",
-               "emoji":True
-            },
+         "type":"static_select",
+         "action_id":"AoFX",
+         "block_id":"type",
+         "selected_option":{
             "text":{
-               "type":"mrkdwn",
-               "text":"Apply for leave ?",
-               "verbatim":False
-            },
-            "confirm":{
                "type":"plain_text",
-               "text":"Do it",
+               "text":"ravel Leave (Avl: 10)",
                "emoji":True
             },
-            "deny":{
-               "type":"plain_text",
-               "text":"Stop, I've changed my mind!",
-               "emoji":True
-            }
+            "value":"XXXX_ID_XXXX"
          },
-         "action_id":"O2sj",
-         "text":{
+         "placeholder":{
             "type":"plain_text",
-            "text":"Submit",
+            "text":"Sick",
             "emoji":True
          },
-         "value":"click_me_123",
-         "style":"primary",
-         "type":"button",
-         "action_ts":"1587928904.302058"
+         "action_ts":"1588864433.163334"
       }
    ]
 }

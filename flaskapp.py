@@ -86,11 +86,22 @@ def index():
 
 @app.route('/slack/interaction', methods=['POST'])
 def slack_interaction():
-    
+    import time 
+    s = time.perf_counter()
     if request.form.get('payload') is None: return Response(status=200)
     
     payload = json.loads(request.form['payload'])
-    return slack_interaction_handler.handle_interaction_main(payload)
+    message = { 'target':'slack_interaction','query':payload }
+    
+    message = json.dumps(message)
+    
+    publish_message_from_slack_to_sns(message,rootDir)
+    
+    logging.error(f'-------- {time.time()} ')
+    #elapsed = time.perf_counter() - s
+    #print(f"----------------{__file__} executed in {elapsed:0.2f} seconds.")
+    #slack_interaction_handler.handle_interaction_main(payload)
+    return Response(status=200)
     
     
 @app.route('/slack/events', methods=['POST'])
@@ -117,7 +128,8 @@ def slack_route():
             return Response(status=200)
         
         #slack._main_process_slack_event(query,rootDir)
-        message = json.dumps(query)
+        message = { 'target':'slack_event','query':query  }
+        message = json.dumps(message)
         publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
@@ -140,8 +152,15 @@ def sns():
     if hdr == 'Notification':
        
         message = json.loads(js['Message'])
-        logging.info(f'Message send to sns is {message}')
-        slack._main_process_slack_event(message,rootDir)
+        
+        if message['target']=='slack_event':
+            logging.info(f'Message send to sns is {message["query"]}')
+            slack._main_process_slack_event(message["query"],rootDir)
+        
+        if message['target'] == 'slack_interaction':
+            payload = message["query"]
+            slack_interaction_handler.handle_interaction_main(payload)
+            
         #print(type(js['message']))
 
 

@@ -21,7 +21,7 @@ def processAttachment( filePath , fileType ,rootDir):
     date = dateFinder.getDate( extractTextPath )
     category = categoryFinder.getCategory( extractTextPath )
     
-    data = { 'unit':unit,'amount': amount , 'date':date , 'category':category }
+    data = { 'receipt':'success', 'unit':unit,'amount': amount , 'date':date , 'category':category }
     logging.info(data)
     return data
 

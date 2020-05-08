@@ -15,7 +15,7 @@ def apply_leave(query):
 				"text": "*Apply Leave*"
 			}
 		},
-		{   "block_id":"1",
+		{   "block_id":"type",
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
@@ -31,7 +31,7 @@ def apply_leave(query):
 				"options": options
 			}
 		},
-		{   "block_id":"2",
+		{   "block_id":"fdate",
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
@@ -47,7 +47,7 @@ def apply_leave(query):
 				}
 			}
 		},
-		{   "block_id":"3",
+		{   "block_id":"tdate",
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
@@ -138,3 +138,23 @@ def attendanceClockIn(query):
     pass
 def attendanceClockOut(query): 
     pass
+
+    # workspace_id = query['team_id'] #"T011BCF0TRD" for checkbot in pranjal ws
+    # user_id = query['event']['user'] #"U010TRDA89Y"
+    # user_info = slack_helper.get_user_info( user_id,workspace_id )
+    # if user_info is None :
+    #     return
+    
+    # email = user_info['profile']['email']
+    # js = {
+    # "workspace_id":workspace_id,
+    # "email":email
+    # }
+    # if intentName=='attendanceClockIn':
+    #     js["clock_type"] = "IN"
+    # if intentName=='attendanceClockOut':
+    #     js["clock_type"] = "OUT" 
+    # logging.info(js)
+    # url = "https://api.asanify.com/api/attendance/slack/dev/clock"
+    # response = requests.post(url,json = js)                     
+

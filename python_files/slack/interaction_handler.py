@@ -2,6 +2,7 @@ import python_files.slack.slack_helper as slack
 from flask import Response
 import logging
 import requests
+from  python_files.aws_helper.lex_helper import sendSlotValuesToLex 
 
 
 def handle_interaction_main( payload ):
@@ -20,24 +21,14 @@ def interaction_apply_leave(payload):
     
     ts =payload['container']['message_ts']
     action = payload['actions'][0] 
-    
+    #logging.error(f'------ ts previous {action["action_ts"]}')
     blocks = payload['message']['blocks']
-    if action['block_id'] != "submit":
-        ind = (int)(action['block_id'])
-        text = payload['message']['text']
-        if action['type']=='static_select':
-            blocks[ind]['accessory']["placeholder"] = action['selected_option']['text']
-            text = action['selected_option']['value']
-        if action['type']=='datepicker':
-            blocks[ind]['accessory']["initial_date"] = action['selected_date']
-        slack.update_slack_message(channel_id,ts,text=text ,blocks=blocks)
-        return Response(status=200)
-    
-    if action['value'] == 'cancel':
+ 
+    if action['block_id']=='submit' and action['value'] == 'cancel':
         slack.update_slack_message(channel_id,ts,text="Cancelled leave application" )
         return Response(status=200)
     
-    if action['value']=='submit':
+    if action['block_id']=='submit' and action['value']=='submit':
         leave_type = blocks[1]['accessory']['placeholder']['text']
         start_date = blocks[2]['accessory']['initial_date']
         end_date = blocks[3]['accessory']['initial_date']
@@ -45,6 +36,24 @@ def interaction_apply_leave(payload):
         response = send_leave_request_to_asanify(channel_id,start_date,end_date,policy_id,leave_type)
         slack.update_slack_message(channel_id,ts,text=response)
         return Response(status=200)
+    
+       
+    
+    slot_key = action['block_id']
+    slot_value = None
+    if action['type']=='static_select':
+        #blocks[ind]['accessory']["placeholder"] = action['selected_option']['text']
+        slot_value = action['selected_option']['value']
+    if action['type']=='datepicker':
+        slot_value = action['selected_date']
+    #slack.update_slack_message(channel_id,ts,text=text ,blocks=blocks)
+    intentName = 'addExpense'
+    received_data = { slot_key:slot_value  }
+    logging.error( received_data )
+    response = sendSlotValuesToLex(received_data,intentName=intentName,sender_id=channel_id)
+    return Response(status=200)
+    
+    
     
     return Response(status=200)
 

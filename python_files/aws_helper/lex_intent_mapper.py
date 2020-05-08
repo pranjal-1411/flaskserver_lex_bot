@@ -30,25 +30,6 @@ def slack_intent( lex_response , query ):
         
     
     # logging.info( f'Intent Mapped is {intentName}' )
-    # workspace_id = query['team_id'] #"T011BCF0TRD" for checkbot in pranjal ws
-    # user_id = query['event']['user'] #"U010TRDA89Y"
-    # user_info = slack_helper.get_user_info( user_id,workspace_id )
-    # if user_info is None :
-    #     return
-    
-    # email = user_info['profile']['email']
-    # js = {
-    # "workspace_id":workspace_id,
-    # "email":email
-    # }
-    # if intentName=='attendanceClockIn':
-    #     js["clock_type"] = "IN"
-    # if intentName=='attendanceClockOut':
-    #     js["clock_type"] = "OUT" 
-    # logging.info(js)
-    # url = "https://api.asanify.com/api/attendance/slack/dev/clock"
-    # response = requests.post(url,json = js)                     
-
 
     
     

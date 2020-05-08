@@ -54,7 +54,7 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
         filePath = message['message']['attachment']['path']
         fileType = message['message']['attachment']['type']
         data = processAttachment( filePath , fileType , rootDir )
-        response = sendSlotValuesToLex( data , sender_id  ) 
+        response = sendSlotValuesToLex( data ,  'addExpense'  , sender_id,useOldValue=True  ) 
     
     elif message['message'].get('text'):
         response = sendTextToLex( message['message']['text'],sender_id )
@@ -170,35 +170,22 @@ def sendTextToLex( message , sender_id  ):
     logging.info( f'Response from lex is {response}' )
     return response
 
-def sendSlotValuesToLex( data , sender_id ):
-    
-    slotValue = { 'receipt':'success' }
-    if data.get('unit'): slotValue['unit']=data['unit']
-    if data.get('amount'): slotValue['amount']=data['amount']
-    if data.get('category'): slotValue['category'] = data['category']
-    if data.get('date') : slotValue['date'] = data['date']
-    
+def sendSlotValuesToLex( data , intentName, sender_id , useOldValue = False ):
+    initEnvironment('/mnt/f/python3resolve')
+    slotValue =  data
+
     client = boto3.client('lex-runtime')
     
-    get_session_response = { 'recentIntentSummaryView':[] }
+
     try:
-        get_session_response = client.get_session(
-        botName= botName ,
-        botAlias= botAlias ,
-        userId= sender_id 
-        )
-        temp = []
+        get_session_response = client.get_session(botName= botName ,botAlias= botAlias ,userId= sender_id )
         for recentIntent in get_session_response['recentIntentSummaryView']:
-            if recentIntent['intentName']!=intentName: 
-                temp.append(recentIntent)
-            else:
-                for key,value in recentIntent['slots'].items():
-                    if value is not None:  slotValue[key] = value
-                
-        get_session_response['recentIntentSummaryView'] = temp     
+            if recentIntent['intentName']==intentName:
+                [ slotValue.update([item]) for item in recentIntent['slots'].items() if item[1] is not None and (useOldValue or slotValue.get(item[0]) is None)  ] 
+                                
     except Exception as e:
-        logging.info('Session does not exist. Starting new session')
-         
+        logging.error('---------------Session does not exist. Starting new session')
+        
     client = boto3.client('lex-runtime')
     response = client.put_session(
         botName=botName,
@@ -209,9 +196,10 @@ def sendSlotValuesToLex( data , sender_id ):
             'type': 'Delegate',
             'intentName': intentName ,
             'slots': slotValue
-        },
-        recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
+        }
+        #recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
     ) 
+    logging.error(response)
     #print(response)
     return response
 
