@@ -11,12 +11,13 @@ def _main_map_lex_intent( lex_response , query =None, source = None ):
              
 
 def slack_intent( lex_response , query ):
-    intentName ='ApplyLeave' 
+    intentName = lex_response.get('intentName') 
     if intentName == 'ApplyLeave':
         slack_intent_action.apply_leave(query)
         response = {"ignoreLex":True}
         return response
-        
+    
+    return {}    
     
     
 if __name__ == "__main__":

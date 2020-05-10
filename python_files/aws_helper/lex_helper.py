@@ -77,6 +77,47 @@ def generateResponse( message ,rootDir ,query = None ,  source = None ):
     response = { "messages": finalMessageArray }
     
     return  response
+
+def sendSlotValuesToLex( sender_id,intentName,slotValue ):
+    
+    client = boto3.client('lex-runtime')
+    
+    get_session_response = { 'recentIntentSummaryView':[] }
+    try:
+        get_session_response = client.get_session(
+        botName= botName ,
+        botAlias= botAlias ,
+        userId= sender_id 
+        )
+        temp = []
+        for recentIntent in get_session_response['recentIntentSummaryView']:
+            if recentIntent['intentName']!=intentName: 
+                temp.append(recentIntent)
+            else:
+                for key,value in recentIntent['slots'].items():
+                    if slotValue.get(key) is None and value is not None:  slotValue[key] = value
+                
+        get_session_response['recentIntentSummaryView'] = temp     
+    except Exception as e:
+        logging.info('Session does not exist. Starting new session')
+         
+    client = boto3.client('lex-runtime')
+    response = client.put_session(
+        botName=botName,
+        botAlias=botAlias,
+        userId= sender_id ,
+        sessionAttributes={},
+        dialogAction={
+            'type': 'Delegate',
+            'intentName': intentName ,
+            'slots': slotValue
+        },
+        recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
+    ) 
+    logging.error(response)
+    
+    return response
+
     
         
 def sendTextToLex( message , sender_id  ):
