@@ -171,7 +171,7 @@ def sendTextToLex( message , sender_id  ):
     return response
 
 def sendSlotValuesToLex( data , intentName, sender_id , useOldValue = False ):
-    initEnvironment('/mnt/f/python3resolve')
+    
     slotValue =  data
 
     client = boto3.client('lex-runtime')
