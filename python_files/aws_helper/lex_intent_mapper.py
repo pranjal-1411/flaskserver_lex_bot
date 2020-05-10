@@ -28,7 +28,7 @@ def slack_intent( lex_response , query ):
         response = {"ignoreLex":True}
         return response
         
-    
+    return {}
     # logging.info( f'Intent Mapped is {intentName}' )
 
     

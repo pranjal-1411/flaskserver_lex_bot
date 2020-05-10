@@ -170,29 +170,22 @@ def sendTextToLex( message , sender_id  ):
     logging.info( f'Response from lex is {response}' )
     return response
 
-def sendSlotValuesToLex( slotValue,intentName , sender_id ):
-    
-    client = boto3.client('lex-runtime')
+def sendSlotValuesToLex( data , intentName, sender_id , useOldValue = False ):
+    initEnvironment('/mnt/f/python3resolve')
+    slotValue =  data
 
-    get_session_response = { 'recentIntentSummaryView':[] }
+    client = boto3.client('lex-runtime')
+    
+
     try:
-        get_session_response = client.get_session(
-        botName= botName ,
-        botAlias= botAlias ,
-        userId= sender_id 
-        )
-        temp = []
+        get_session_response = client.get_session(botName= botName ,botAlias= botAlias ,userId= sender_id )
         for recentIntent in get_session_response['recentIntentSummaryView']:
-            if recentIntent['intentName']!=intentName: 
-                temp.append(recentIntent)
-            else:
-                for key,value in recentIntent['slots'].items():
-                    if slotValue.get(key) is None and value is not None:  slotValue[key] = value
-                
-        get_session_response['recentIntentSummaryView'] = temp     
+            if recentIntent['intentName']==intentName:
+                [ slotValue.update([item]) for item in recentIntent['slots'].items() if item[1] is not None and (useOldValue or slotValue.get(item[0]) is None)  ] 
+                                
     except Exception as e:
-        logging.info('Session does not exist. Starting new session')
-         
+        logging.error('---------------Session does not exist. Starting new session')
+        
     client = boto3.client('lex-runtime')
     response = client.put_session(
         botName=botName,
@@ -203,13 +196,12 @@ def sendSlotValuesToLex( slotValue,intentName , sender_id ):
             'type': 'Delegate',
             'intentName': intentName ,
             'slots': slotValue
-        },
-        recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
+        }
+        #recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
     ) 
-    logging.error(response)
-    
+    #logging.error(response)
+    #print(response)
     return response
-
 
 def getSlotValuesFromLex( intentName,sender_id ):
     client = boto3.client('lex-runtime')
