@@ -92,14 +92,29 @@ def _main_process_slack_event(query,rootDir):
     
     if lexResponse:
         for message in lexResponse['messages']:
-            send_message_to_slack( channelId, message['text'],access_token )
+            send_message_to_slack( channelId, text= message['text'],access_token=access_token )
 
 def find_access_token( team_id ):
     
     return None 
 
+def update_slack_message(channel_id,ts, text=None,blocks=None,access_token=None):
+    if access_token is None:
+        access_token = os.getenv("SLACK_TOKEN")
+    slack_client = WebClient(access_token)
+    
+    response = slack_client.chat_update(
+        as_user=True,
+        ok= True,
+    channel= channel_id,
+    ts=ts,
+    text= text,
+    blocks=blocks,  
+    )
+    logging.info(f'Response on slack update message is {response}')   
+    
 
-def send_message_to_slack(channel_id, message,access_token=None):
+def send_message_to_slack(channel_id, text=None,blocks = None,access_token=None):
     
     if access_token is None:
         access_token = os.getenv("SLACK_TOKEN")
@@ -107,10 +122,11 @@ def send_message_to_slack(channel_id, message,access_token=None):
 
     response = slack_client.chat_postMessage(
         channel=channel_id,
-        text=message
+        text= text,
+        blocks= blocks
     )
 
-    logging.info( f'Response from slack.post api is {response } '  )
+    logging.info( f'Response from slack.post api is {response }' )
     
 def get_user_info( user_id, workspace_id ):
     access_token = find_access_token(workspace_id)

@@ -118,6 +118,18 @@ def sendSlotValuesToLex( sender_id,intentName,slotValue ):
     
     return response
 
+def getSlotValuesFromLex( intentName,sender_id ):
+    client = boto3.client('lex-runtime')
+    try:
+        get_session_response = client.get_session(botName= botName ,botAlias= botAlias ,userId= sender_id )
+        for recentIntent in get_session_response['recentIntentSummaryView']:
+            if recentIntent['intentName']==intentName:
+                return recentIntent['slots'] 
+                        
+                
+                                
+    except Exception as e:
+        return {}
     
         
 def sendTextToLex( message , sender_id  ):
