@@ -9,26 +9,18 @@ botName = None
 botAlias = None
 from dotenv import load_dotenv
 intentName = None
-def initEnvironment( rootDir ):
-    global botName,botAlias,intentName
-    load_dotenv(os.path.join(rootDir, '.env'))
-    botName = os.getenv('BOT_NAME')
-    botAlias = os.getenv('BOT_ALIAS')
-    #intentName = os.getenv('INTENT_NAME')
-    os.environ['AWS_ACCESS_KEY_ID'] =  os.getenv('AWS_ACCESS_KEY_ID')
-    os.environ['AWS_SECRET_ACCESS_KEY']= os.getenv('AWS_SECRET_ACCESS_KEY')
-    os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
+load_dotenv(os.path.join('/mnt/f/python3resolve', '.env'))
 
 
 def sendSlotValuesToLex( sender_id,intentName,slotValue ):
-    initEnvironment('/mnt/f/python3resolve')
+    #initEnvironment('/mnt/f/python3resolve')
     client = boto3.client('lex-runtime')
     
     get_session_response = { 'recentIntentSummaryView':[] }
     try:
         get_session_response = client.get_session(
-        botName= botName ,
-        botAlias= botAlias ,
+        botName= os.getenv('BOT_NAME') ,
+        botAlias= os.getenv('BOT_ALIAS') ,
         userId= sender_id 
         )
         temp = []
@@ -45,8 +37,8 @@ def sendSlotValuesToLex( sender_id,intentName,slotValue ):
          
     client = boto3.client('lex-runtime')
     response = client.put_session(
-        botName=botName,
-        botAlias=botAlias,
+        botName=os.getenv('BOT_NAME'),
+        botAlias=os.getenv('BOT_ALIAS'),
         userId= sender_id ,
         sessionAttributes={},
         dialogAction={
@@ -82,8 +74,8 @@ def sendTextToLex( message , sender_id  ):
     
     client = boto3.client('lex-runtime')
     response = client.post_text(
-        botName= botName ,
-        botAlias= botAlias,
+        botName= os.getenv('BOT_NAME') ,
+        botAlias= os.getenv('BOT_ALIAS'),
         userId=sender_id,
         sessionAttributes={},
         requestAttributes={},
@@ -94,10 +86,10 @@ def sendTextToLex( message , sender_id  ):
 
 
 if __name__ == "__main__":
-    initEnvironment('/mnt/f/python3resolve')
     
-    intentName= 'addExpense'
+
+    intentName= 'ApplyLeave'
     sender_id = '12345'
-    slotValue = {'amount':'12345dgsvsv'}
+    slotValue = {'type':'12345dgsvsv'}
     sendSlotValuesToLex(sender_id,intentName,slotValue)
     #sendTextToLex('hii',sender_id,)
