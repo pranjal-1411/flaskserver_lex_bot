@@ -33,15 +33,15 @@ def interaction_apply_leave(payload):
         logging.error(f'Submit button pressef ----------')
         response= None
         logging.error(slots)
-        if( slots.get('type') is None ): response = "Please try again. Leave type not choosen"
-        elif( slots.get('fdate') is None ): response = "Please try again. Starting date not choosen"
-        elif( slots.get('tdate') is None ): response = "Please try again. End date not choosen"
+        if( slots.get('leave_type') is None ): response = "Please try again. Leave type not choosen"
+        elif( slots.get('from_date') is None ): response = "Please try again. Starting date not choosen"
+        elif( slots.get('to_date') is None ): response = "Please try again. End date not choosen"
         else :
-            leave_id = slots['type']
-            fdate = slots['fdate']
-            tdate = slots['tdate']
-            logging.error(f'{leave_id} {fdate}  {tdate}')
-            response = send_leave_request_to_asanify(channel_id,fdate,tdate,leave_id)
+            leave_id = slots['leave_type']
+            from_date = slots['from_date']
+            to_date = slots['to_date']
+            logging.error(f'{leave_id} {from_date}  {to_date}')
+            response = send_leave_request_to_asanify(channel_id,from_date,to_date,leave_id)
         slack.update_slack_message(channel_id,ts,text=response)
         return Response(status=200)
     
@@ -65,22 +65,22 @@ def interaction_apply_leave(payload):
     
     return Response(status=200)
 
-def send_leave_request_to_asanify(emp_code,frm_date,to_date,policy_id,policy_name=None):
+def send_leave_request_to_asanify(emp_code,from_date,to_date,policy_id,policy_name=None):
     
     url ="https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/request"
     #url = "https://24ac1a95-f9f1-40b1-88b0-399710d4da94.mock.pstmn.io/api/leave/request"
     js ={
         "ASAN_EMPCODE":emp_code,
-        "FROM_DATE":frm_date,
+        "FROM_DATE":from_date,
         "TO_DATE":to_date,
         "POLICY_ID":policy_id,
         "NOTE":"Note",
         "ADDITIONAL_RECIPIENTS":""
     }
-    logging.error(f'Sent request {emp_code} {frm_date} {policy_id} {policy_name}')
+    logging.error(f'Sent request {emp_code} {from_date} {policy_id} {policy_name}')
     response = requests.post(url=url,json=js)
     
     if response.status_code == 200:
-        return f'Successfully applied for leave under category {policy_name} leave from {frm_date} to {to_date}'
+        return f'Successfully applied for leave under category {policy_name} leave from {from_date} to {to_date}'
     else:
         return response.json()['msg']

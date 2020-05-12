@@ -68,12 +68,8 @@ def slack_interaction():
     
     message = json.dumps(message)
     
-    #publish_message_from_slack_to_sns(message,rootDir)
+    publish_message_from_slack_to_sns(message,rootDir)
     
-    #logging.error(f'-------- {time.time()} ')
-    #elapsed = time.perf_counter() - s
-    #print(f"----------------{__file__} executed in {elapsed:0.2f} seconds.")
-    slack_interaction_handler.handle_interaction_main(payload)
     return Response(status=200)
     
     
@@ -100,10 +96,10 @@ def slack_route():
         if slack.check_event(query['event']) is False:
             return Response(status=200)
         
-        slack._main_process_slack_event(query,rootDir)
-        #message = { 'target':'slack_event','query':query  }
-        #message = json.dumps(message)
-        #publish_message_from_slack_to_sns(message,rootDir)
+        
+        message = { 'target':'slack_event','query':query  }
+        message = json.dumps(message)
+        publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
 
