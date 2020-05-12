@@ -54,31 +54,27 @@ def redirect_auth():
     return render_template("index.html")
 
 
-@app.route('/', methods=['GET','POST'])
-def index():
+    
 
-    senderId = request.form['userId']
-    text = request.form.get('text')
-   
-    if request.files:
-        files_dict = request.files.to_dict()
-        for fileName,fileObject in files_dict.items():
-            filePath = os.path.join(rootDir,'processedAttachment', fileName)
-            fileObject.save(filePath)
-            fileType = 'image'
-            if fileObject.content_type.find('application') != -1:
-                fileType = 'pdf'
-            message = createMessageDict( senderId, text,has_attachment=True,attach_path=filePath,attach_type=fileType )
-    else:
-        message = createMessageDict( senderId,text )
-                   
-    return jsonify(generateResponse( message,rootDir))      
 
 @app.route('/slack/interaction', methods=['POST'])
 def slack_interaction():
+    import time 
+    s = time.perf_counter()
+    if request.form.get('payload') is None: return Response(status=200)
     
     payload = json.loads(request.form['payload'])
-    return slack_interaction_handler.handle_interaction_main(payload)
+    message = { 'target':'slack_interaction','query':payload }
+    
+    message = json.dumps(message)
+    
+    #publish_message_from_slack_to_sns(message,rootDir)
+    
+    #logging.error(f'-------- {time.time()} ')
+    #elapsed = time.perf_counter() - s
+    #print(f"----------------{__file__} executed in {elapsed:0.2f} seconds.")
+    slack_interaction_handler.handle_interaction_main(payload)
+    return Response(status=200)
     
     
 @app.route('/slack/events', methods=['POST'])
@@ -104,9 +100,10 @@ def slack_route():
         if slack.check_event(query['event']) is False:
             return Response(status=200)
         
-        #slack._main_process_slack_event(query,rootDir)
-        message = json.dumps(query)
-        publish_message_from_slack_to_sns(message,rootDir)
+        slack._main_process_slack_event(query,rootDir)
+        #message = { 'target':'slack_event','query':query  }
+        #message = json.dumps(message)
+        #publish_message_from_slack_to_sns(message,rootDir)
        
     return Response(status=200) 
 
@@ -128,14 +125,20 @@ def sns():
     if hdr == 'Notification':
        
         message = json.loads(js['Message'])
-        logging.info(f'Message send to sns is {message}')
-        slack._main_process_slack_event(message,rootDir)
+        
+        if message['target']=='slack_event':
+            logging.info(f'Message send to sns is {message["query"]}')
+            slack._main_process_slack_event(message["query"],rootDir)
+        
+        if message['target'] == 'slack_interaction':
+            payload = message["query"]
+            slack_interaction_handler.handle_interaction_main(payload)
+            
         #print(type(js['message']))
 
 
     return 'OK\n'
     
-
  
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
