@@ -29,6 +29,10 @@ load_dotenv(os.path.join(app.root_path,'.env'))
 app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'   
 rootDir = app.root_path
 
+
+import python_files.ms_team.ms_app as ms_app
+
+
 @app.route('/test', methods=['GET','POST'])
 def temp():
     return "Hello World"
@@ -169,7 +173,8 @@ def sns():
 
  
 if __name__ == '__main__':
-    app.run(ssl_context='adhoc')
+    ms_app.temp()
+    #app.run(ssl_context='adhoc')
 
 
 
