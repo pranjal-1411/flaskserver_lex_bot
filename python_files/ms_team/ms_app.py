@@ -86,6 +86,9 @@ async def messages(req: Request) -> Response:
 
 APP = web.Application(middlewares=[aiohttp_error_middleware])
 
+
+
+
 APP.router.add_post("/api/messages", messages)
 
 def temp():
@@ -101,5 +104,3 @@ if __name__ == "__main__":
         raise error
 
 
-
-# 6CoV9[8ydr?oD5:YNspgR:h_8GXrvCi=
