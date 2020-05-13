@@ -30,9 +30,6 @@ app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'
 rootDir = app.root_path
 
 
-import python_files.ms_team.ms_app as ms_app
-
-
 @app.route('/test', methods=['GET','POST'])
 def temp():
     return "Hello World"
@@ -173,8 +170,8 @@ def sns():
 
  
 if __name__ == '__main__':
-    ms_app.temp()
-    #app.run(ssl_context='adhoc')
+    
+    app.run(ssl_context='adhoc')
 
 
 
