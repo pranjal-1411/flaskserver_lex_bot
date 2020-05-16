@@ -30,9 +30,6 @@ app.secret_key = 'cC1YCIWOj9GkjbkjbkjbgWspgNEo2'
 rootDir = app.root_path
 
 
-import python_files.ms_team.ms_app as ms_app
-
-
 @app.route('/test', methods=['GET','POST'])
 def temp():
     return "Hello World"
@@ -109,9 +106,9 @@ def slack_interaction():
     
     
 @app.route('/slack/events', methods=['POST'])
-async def slack_route():
+def slack_route():
     # to do  ---- check for request authenticity 
-    logging.error("Hiiiiii")
+    
     query = request.json
     
     if not slack.verify_slack_request( request ):
@@ -169,24 +166,12 @@ def sns():
 
 
     return 'OK\n'
- 
-
-import aiohttp
-
-def temp2(req):
-    
-    logging.error('Hoya')
-    return Response(status=201,text='Hiikhbkbkkcknckjnk')
     
 
-ms_app.APP.router.add_get('/abc', temp2 )
- 
-    
-ms_app.APP.router.add_post('/slack/events',slack_route)
  
 if __name__ == '__main__':
-    ms_app.temp()
-    #app.run()
+    
+    app.run(ssl_context='adhoc')
 
 
 
