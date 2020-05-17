@@ -1,6 +1,3 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-
 import sys
 import traceback
 from datetime import datetime
@@ -8,14 +5,12 @@ import logging
 
 import asyncio
 
-from aiohttp import web
-from aiohttp.web import Request, Response, json_response
 from botbuilder.core import (
     BotFrameworkAdapterSettings,
     TurnContext,
     BotFrameworkAdapter,
 )
-from botbuilder.core.integration import aiohttp_error_middleware
+#from botbuilder.core.integration import aiohttp_error_middleware
 from botbuilder.schema import Activity, ActivityTypes
 
 from python_files.ms_team.bot import MyBot
@@ -61,46 +56,25 @@ ADAPTER.on_turn_error = on_error
     
 # Create the Bot
 BOT = MyBot()
-
-
-# Listen for incoming requests on /api/messages
-async def messages(req: Request) -> Response:
-    # Main bot message handler.
-    if "application/json" in req.headers["Content-Type"]:
-        body = await req.json()
-    else:
-        return Response(status=415)
-
+LOOP = asyncio.get_event_loop()
+def _main_process_ms_message(body,auth_header):
+    
     activity = Activity().deserialize(body)
-    auth_header = req.headers["Authorization"] if "Authorization" in req.headers else ""
+    
 
     try:
-        response = await ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
-        
-        if response:
-            return json_response(data=response.body, status=response.status)
-        return Response(status=201)
+        task = LOOP.create_task(
+            ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
+        )
+        LOOP.run_until_complete(task)
+       
+        return 
     except Exception as exception:
         raise exception
+    
 
-
-APP = web.Application(middlewares=[aiohttp_error_middleware])
-
-
-
-
-APP.router.add_post("/api/messages", messages)
-
-def temp():
-    try:
-        web.run_app(APP, host="localhost", port=CONFIG.PORT)
-    except Exception as error:
-        raise error
 
 if __name__ == "__main__":
-    try:
-        web.run_app(APP, host="localhost", port=CONFIG.PORT)
-    except Exception as error:
-        raise error
+    pass
 
 

@@ -8,6 +8,8 @@ import sys
 import os
 import requests
 
+import python_files.ms_team.helper as ms_team
+
 from dotenv import load_dotenv
 
 
@@ -136,7 +138,6 @@ def slack_route():
     return Response(status=200) 
 
 
-
 @app.route('/sns', methods = ['GET', 'POST', 'PUT'])
 def sns():
     # AWS sends JSON with text/plain mimetype
@@ -166,12 +167,27 @@ def sns():
 
 
     return 'OK\n'
+
+
+@app.route('/ms/messages',methods=['POST'])
+def ms_message():
+    
+    if "application/json" in request.headers["Content-Type"]:
+        body = request.json
+    else:
+        return Response(status=415)
+    
+    auth_header = (
+        request.headers["Authorization"] if "Authorization" in request.headers else ""
+    )
+    ms_team._main_process_ms_message(body,auth_header)
+    return Response(status=200)
     
 
  
 if __name__ == '__main__':
-    
-    app.run(ssl_context='adhoc')
+    app.run(host='localhost',port=3978)
+    #app.run(ssl_context='adhoc')
 
 
 

@@ -16,6 +16,8 @@ botAlias = None
 intentName = None
 
 def initEnvironment( rootDir ):
+    if rootDir is None:
+        rootDir='/mnt/f/python3resolve'
     global botName,botAlias,intentName
     load_dotenv(os.path.join(rootDir, '.env'))
     botName = os.getenv('BOT_NAME')
@@ -26,7 +28,7 @@ def initEnvironment( rootDir ):
     # os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
 
 
-def generateResponse( message ,rootDir ,query = None ,  source = None ):
+def generateResponse( message ,rootDir=None ,query = None ,  source = None ):
      
     initEnvironment( rootDir )
     

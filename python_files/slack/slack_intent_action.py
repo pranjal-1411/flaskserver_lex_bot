@@ -66,3 +66,13 @@ def attendanceClockOut(query):
     # url = "https://api.asanify.com/api/attendance/slack/dev/clock"
     # response = requests.post(url,json = js)                     
 
+# url = "https://api.asanify.com/api/attendance/slack/dev/clock"
+
+# js = {
+# "workspace_id":"ABCD",
+# "email":"check@gmail.com",
+# "clock_type":"IN"
+# }
+# response = requests.post(url,json = js)
+# print(response.headers)                         
+# print(response.json()['success'])     
