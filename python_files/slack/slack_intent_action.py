@@ -5,6 +5,8 @@ import logging
 import os 
 import json
 
+import python_files.asanify_server.helper as asanify_helper
+
 def apply_leave(query):
     
     channel_id = query['event']['channel']
@@ -21,11 +23,7 @@ def apply_leave(query):
     
 def get_leave_options( emp_code ):
     
-	url = "https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/balance/read"
-	js = {
-			"ASAN_EMPCODE": emp_code      
-	}
-	response = requests.post(url=url,json=js)
+	response = asanify_helper.get_leave_balance(emp_code)
 	options = [] 
 	if response.status_code==200:
 		for item in response.json()['LEAVE_BALANCES']:

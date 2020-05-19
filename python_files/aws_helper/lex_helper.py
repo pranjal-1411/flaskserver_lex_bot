@@ -28,7 +28,7 @@ def initEnvironment( rootDir ):
     # os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
 
 
-def generateResponse( message ,rootDir=None ,query = None ,  source = None ):
+def generateResponse( message ,rootDir=None ,query = None ,  source = None,turn_context = None ):
      
     initEnvironment( rootDir )
     
@@ -72,7 +72,11 @@ def generateResponse( message ,rootDir=None ,query = None ,  source = None ):
         return  {"messages":messageArray}
     
     logging.info(f'Response from lex is {response}')
-    server_response = _main_map_lex_intent( response , query , source  )
+    
+    server_response = _main_map_lex_intent(response , query=query , source=source ,turn_context=turn_context ) 
+    
+    if source == 'ms' and server_response.get("ignoreLex") and server_response.get("intent"):
+        return { "messages":[],"intent":server_response['intent']  }
     
     if server_response.get("ignoreLex") and server_response["ignoreLex"] is True:
         response = server_response
@@ -172,7 +176,7 @@ def sendTextToLex( message , sender_id  ):
     logging.info( f'Response from lex is {response}' )
     return response
 
-def sendSlotValuesToLex( slotValue,intentName , sender_id ):
+def sendSlotValuesToLex( slotValue,intentName , sender_id,session_attributes={} ):
     
     client = boto3.client('lex-runtime')
 
@@ -191,35 +195,43 @@ def sendSlotValuesToLex( slotValue,intentName , sender_id ):
                 for key,value in recentIntent['slots'].items():
                     if slotValue.get(key) is None and value is not None:  slotValue[key] = value
                 
-        get_session_response['recentIntentSummaryView'] = temp     
+        get_session_response['recentIntentSummaryView'] = temp  
+        if session_attributes == {}:
+            session_attributes = get_session_response['sessionAttributes']  
     except Exception as e:
-        logging.info('Session does not exist. Starting new session')
+        logging.error('Session does not exist. Starting new session')
          
     client = boto3.client('lex-runtime')
     response = client.put_session(
         botName=botName,
         botAlias=botAlias,
         userId= sender_id ,
-        sessionAttributes={},
+        sessionAttributes=session_attributes,
         dialogAction={
             'type': 'Delegate',
             'intentName': intentName ,
             'slots': slotValue
-        },
-        recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
+        }
+        #recentIntentSummaryView= get_session_response.get('recentIntentSummaryView') 
     ) 
-    logging.info(response)
+    
     
     return response
 
 
-def getSlotValuesFromLex( intentName,sender_id ):
+def getSlotValuesFromLex( intentName,sender_id,session_attributes=False ):
     client = boto3.client('lex-runtime')
     try:
         get_session_response = client.get_session(botName= botName ,botAlias= botAlias ,userId= sender_id )
+        #logging.error(get_session_response)
         for recentIntent in get_session_response['recentIntentSummaryView']:
             if recentIntent['intentName']==intentName:
-                return recentIntent['slots'] 
+                if session_attributes :
+                    return {
+                            'session_attributes':get_session_response['sessionAttributes'],
+                            'slots':recentIntent['slots']
+                        }
+                else:   return recentIntent['slots'] 
                         
                 
                                 
@@ -244,16 +256,16 @@ def createMessageDict(senderId , text , has_attachment=False, attach_path=None,a
     
      
 if __name__ == "__main__":
-    #sendSlotValuesToLex({'category':'Food'},'1234567')   
-    message =   {
-        'sender': {
-            'id': '1234'
-        }, 
-        'message': {
-          'text': 'Hi', 
-          'attachment': 
-            {'name': 'file.pdf', 'type': 'file'}
-        }
-    }
-    generateResponse( message )
+    sendSlotValuesToLex({'leave_type':'Travel'},"ApplyLeave",'pranjalguptacse@gmail.com')   
+    # message =   {
+    #     'sender': {
+    #         'id': '1234'
+    #     }, 
+    #     'message': {
+    #       'text': 'Hi', 
+    #       'attachment': 
+    #         {'name': 'file.pdf', 'type': 'file'}
+    #     }
+    # }
+    # generateResponse( message )
  

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "Apply Leave",
+            "horizontalAlignment": "center"
+        },
+        {
+            "type": "TextBlock",
+            "text": " ",
+            "horizontalAlignment": "center"
+        },
+        {
+        "type": "TextBlock",
+            "text": "Select start date",
+            "wrap":true,
+            "horizontalAlignment": "left"
+        }
+    ]
+}

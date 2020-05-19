@@ -57,17 +57,20 @@ ADAPTER.on_turn_error = on_error
 # Create the Bot
 BOT = MyBot()
 LOOP = asyncio.get_event_loop()
+
 def _main_process_ms_message(body,auth_header):
     
     activity = Activity().deserialize(body)
     
 
     try:
+    
         task = LOOP.create_task(
             ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
         )
-        LOOP.run_until_complete(task)
-       
+                
+        LOOP.run_until_complete(task)   
+
         return 
     except Exception as exception:
         raise exception

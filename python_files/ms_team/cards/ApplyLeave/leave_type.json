@@ -1,0 +1,54 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "Apply Leave",
+            "horizontalAlignment": "center"
+        },
+        {
+            "type": "TextBlock",
+            "text": " ",
+            "horizontalAlignment": "center"
+        },
+        {
+            "type": "TextBlock",
+            "text": "Select leave type ( Balance/Availaible )",
+            "horizontalAlignment": "left"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "id": "leave_type",
+            "style": "compact",
+            "value": "1",
+            "choices": [
+                {
+                    "title": "Vacation (5/4)",
+                    "value": "VAC_XXXX"
+                },
+                {
+                    "title": "Sick (8/4)",
+                    "value": "SICK_XXXX"
+                },
+                {
+                    "title": "Maternity (12/6)",
+                    "value": "MATERNITY_XXXX"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Submit",
+            "data": {
+                "intent": "ApplyLeave",
+                "step":"leave_type"
+            }
+        }
+    ]
+}

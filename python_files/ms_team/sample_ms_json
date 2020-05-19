@@ -1,0 +1,78 @@
+# activity received 
+{
+   "additional_properties":{
+
+   },
+   "type":"message",
+   "id":"f:2690080066566297484",
+   "timestamp":datetime.datetime(2020,
+   5,
+   17,
+   12,
+   21,
+   39,
+   705000,
+   tzinfo=<isodate.tzinfo.Utc object at 0x7fe06fbbbc90>),
+   "local_timestamp":datetime.datetime(2020,
+   5,
+   17,
+   17,
+   51,
+   39,
+   705000,
+   "tzinfo=<FixedOffset"   "+05:30"   ">)",
+   "local_timezone":"None",
+   "service_url":"https://smba.trafficmanager.net/in/",
+   "channel_id":"msteams",
+   "from_property":<botbuilder.schema._models_py3.ChannelAccount object at 0x7fe06dfd0090>,
+   "conversation":<botbuilder.schema._models_py3.ConversationAccount object at 0x7fe06dfd0050>,
+   "recipient":<botbuilder.schema._models_py3.ChannelAccount object at 0x7fe06dfd07d0>,
+   "text_format":"None",
+   "attachment_layout":"None",
+   "members_added":"None",
+   "members_removed":"None",
+   "reactions_added":"None",
+   "reactions_removed":"None",
+   "topic_name":"None",
+   "history_disclosed":"None",
+   "locale":"en-US",
+   "text":"None",
+   "speak":"None",
+   "input_hint":"None",
+   "summary":"None",
+   "suggested_actions":"None",
+   "attachments":"None",
+   "entities":[
+      <botbuilder.schema._models_py3.Entity object at 0x7fe06dfd0710>
+   ],
+   "channel_data":{
+      "tenant":{
+         "id":"500f568b-966c-47c9-8bdf-f699e0db3a48"
+      },
+      "source":{
+         "name":"message"
+      },
+      "legacy":{
+         "replyToId":"1:1F2mtebPMxyYMlIp18Pq7USDuoQml9KhV06R4Gn12yyU"
+      }
+   },
+   "action":"None",
+   "reply_to_id":"1589718069675",
+   "label":"None",
+   "value_type":"None",
+   "value":{
+      "x":13,
+      "firstName":"ffwfe",
+      "lastName":"wfwfwef"
+   },
+   "name":"None",
+   "relates_to":"None",
+   "code":"None",
+   "expiration":"None",
+   "importance":"None",
+   "delivery_mode":"None",
+   "listen_for":"None",
+   "text_highlights":"None",
+   "semantic_action":"None",
+   "caller_id":"<CallerIdConstants.public_azure_channel":"urn:botframework:azure"   ">"
+}

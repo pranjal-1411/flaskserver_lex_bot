@@ -5,6 +5,7 @@ import requests
 from  python_files.aws_helper.lex_helper import sendSlotValuesToLex ,getSlotValuesFromLex
 import os
 import json
+import python_files.asanify_server.helper as asanify_helper
 
 def handle_interaction_main( payload ):
     
@@ -36,7 +37,7 @@ def interaction_apply_leave(payload):
         fdate = slots['from_date']
         tdate = slots['to_date']
         logging.error(f'{leave_id} {fdate}  {tdate}')
-        response = send_leave_request_to_asanify(channel_id,fdate,tdate,leave_id)
+        response = asanify_helper.send_leave_request_to_asanify(channel_id,fdate,tdate,leave_id)
         slack.update_slack_message(channel_id,ts,text=response)
         return Response(status=200)
     
@@ -81,22 +82,3 @@ def interaction_apply_leave(payload):
     
     return Response(status=200)
 
-def send_leave_request_to_asanify(emp_code,frm_date,to_date,policy_id,policy_name=None):
-    
-    url ="https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/request"
-    #url = "https://24ac1a95-f9f1-40b1-88b0-399710d4da94.mock.pstmn.io/api/leave/request"
-    js ={
-        "ASAN_EMPCODE":emp_code,
-        "FROM_DATE":frm_date,
-        "TO_DATE":to_date,
-        "POLICY_ID":policy_id,
-        "NOTE":"Note",
-        "ADDITIONAL_RECIPIENTS":""
-    }
-    logging.error(f'Sent request {emp_code} {frm_date} {policy_id} {policy_name}')
-    response = requests.post(url=url,json=js)
-    
-    if response.status_code == 200:
-        return f'Successfully applied for leave under category {policy_name} leave from {frm_date} to {to_date}'
-    else:
-        return response.json()['msg']
