@@ -9,6 +9,8 @@ import python_files.aws_helper.lex_helper as lex_helper
 import python_files.asanify_server.helper as asanify_helper
 import json
 
+
+import threading
 async def handle_interaction( turn_context : TurnContext ):
     
     intent = turn_context.activity.value['intent']
@@ -21,7 +23,7 @@ async def handle_interaction( turn_context : TurnContext ):
 async def interaction_apply_leave( turn_context:TurnContext):
     
     values = turn_context.activity.value
-    user_id = '123456'
+    user_id = '123456' #turn_context.activity.channel_data['tenant']['id']
     end_form = False
     card = None
     if values["step"] == "leave_type":

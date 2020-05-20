@@ -12,8 +12,8 @@ import python_files.ms_team.helper as ms_team
 
 from dotenv import load_dotenv
 
-
-#from threading import Thread
+import asyncio
+from threading import Thread
 
 import logging
 logging.basicConfig( )
@@ -169,6 +169,7 @@ def sns():
     return 'OK\n'
 
 
+
 @app.route('/ms/messages',methods=['POST'])
 def ms_message():
     
@@ -180,7 +181,8 @@ def ms_message():
     auth_header = (
         request.headers["Authorization"] if "Authorization" in request.headers else ""
     )
-    ms_team._main_process_ms_message(body,auth_header)
+    Thread(target= ms_team._main_process_ms_message , args=(body,auth_header) ).start()
+    #ms_team._main_process_ms_message(body,auth_header)
     return Response(status=200)
     
 

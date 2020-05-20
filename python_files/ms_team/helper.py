@@ -56,7 +56,7 @@ ADAPTER.on_turn_error = on_error
     
 # Create the Bot
 BOT = MyBot()
-LOOP = asyncio.get_event_loop()
+
 
 def _main_process_ms_message(body,auth_header):
     
@@ -64,11 +64,13 @@ def _main_process_ms_message(body,auth_header):
     
 
     try:
-    
+        #LOOP = asyncio.get_event_loop()
+        LOOP = asyncio.new_event_loop()
+        asyncio.set_event_loop(LOOP)
         task = LOOP.create_task(
             ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
         )
-                
+              
         LOOP.run_until_complete(task)   
 
         return 
