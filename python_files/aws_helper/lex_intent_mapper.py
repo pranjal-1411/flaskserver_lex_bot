@@ -14,9 +14,9 @@ def _main_map_lex_intent( lex_response , query =None, source = None,turn_context
     return {}          
 
 def slack_intent( lex_response , query ):
-    intentName =lex_response['intentName']
+    intentName =  'ApplyLeave' #lex_response['intentName']
     logging.error(f'Intent Name is {intentName}')
-   
+    
     
     if intentName == 'ApplyLeave':
         slack_intent_action.apply_leave(query)

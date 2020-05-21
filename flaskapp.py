@@ -94,9 +94,10 @@ def slack_interaction():
     if request.form.get('payload') is None: return Response(status=200)
     
     payload = json.loads(request.form['payload'])
-    message = { 'target':'slack_interaction','query':payload }
     
-    message = json.dumps(message)
+    # message = { 'target':'slack_interaction','query':payload }
+    
+    # message = json.dumps(message)
     
     #publish_message_from_slack_to_sns(message,rootDir)
     
@@ -105,12 +106,10 @@ def slack_interaction():
     #print(f"----------------{__file__} executed in {elapsed:0.2f} seconds.")
     slack_interaction_handler.handle_interaction_main(payload)
     return Response(status=200)
-    
+      
     
 @app.route('/slack/events', methods=['POST'])
 def slack_route():
-    # to do  ---- check for request authenticity 
-    
     query = request.json
     
     if not slack.verify_slack_request( request ):
@@ -134,7 +133,7 @@ def slack_route():
         #message = { 'target':'slack_event','query':query  }
         #message = json.dumps(message)
         #publish_message_from_slack_to_sns(message,rootDir)
-       
+    
     return Response(status=200) 
 
 
@@ -191,6 +190,7 @@ def ms_message():
  
 if __name__ == '__main__':
     app.run(host='localhost',port=3978)
+    
     #app.run(ssl_context='adhoc')
 
 

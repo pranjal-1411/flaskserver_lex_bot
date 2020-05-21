@@ -1,0 +1,117 @@
+{
+	"type": "modal",
+	"title": {
+		"type": "plain_text",
+		"text": "Apply Leave",
+		"emoji": true
+	},
+	"submit": {
+		"type": "plain_text",
+		"text": "Submit",
+		"emoji": true
+	},
+	"close": {
+		"type": "plain_text",
+		"text": "Cancel",
+		"emoji": true
+	},
+	"blocks": [
+		{
+			"type": "divider",
+			"block_id":"ApplyLeave"
+		},
+		{	"block_id":"leave_type",
+			"type": "input",
+			"element": {
+                "action_id":"leave_type_action",
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an item",
+					"emoji": true
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "*this is plain_text text*",
+							"emoji": true
+						},
+						"value": "value-0"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "*this is plain_text text*",
+							"emoji": true
+						},
+						"value": "value-1"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "*this is plain_text text*",
+							"emoji": true
+						},
+						"value": "value-2"
+					}
+				]
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select leave type (Bal/Avl)",
+				"emoji": true
+			}
+		},
+		{	"block_id":"from_date",
+			"type": "input",
+			"element": {
+                "action_id":"from_date_action",
+				"type": "datepicker",
+				"initial_date": "2020-04-28",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select a date",
+					"emoji": true
+				}
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select start date",
+				"emoji": true
+			}
+		},
+		{	"block_id":"to_date",
+			"type": "input",
+			"element": {
+                "action_id":"to_date_action",
+				"type": "datepicker",
+				"initial_date": "2020-04-28",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select a date",
+					"emoji": true
+				}
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select end date ",
+				"emoji": true
+			}
+		},
+		{  "block_id":"additional_note",
+			"type": "input",
+			"label": {
+				"type": "plain_text",
+				"text": "Additional Note ?",
+				"emoji": true
+			},
+			"element": {
+                "action_id":"additional_note_action",
+				"type": "plain_text_input",
+				"multiline": true
+			},
+			"optional": false
+		}
+	]
+}

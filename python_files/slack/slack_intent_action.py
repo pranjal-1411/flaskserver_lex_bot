@@ -7,17 +7,19 @@ import json
 
 import python_files.asanify_server.helper as asanify_helper
 
+
+
 def apply_leave(query):
     
     channel_id = query['event']['channel']
     options = get_leave_options( channel_id )
 
-    file_path = os.path.join( os.getenv('ROOT_PATH'),'python_files/slack/blocks/apply_leave/leave_type.json')
+    file_path = os.path.join( os.getenv('ROOT_PATH'),'python_files/slack/blocks/apply_leave/initiate_button.json')
     blocks = None
     
     with open(file_path,'r') as block_json:
         blocks = json.load(block_json)
-    blocks[1]['accessory']['options'] = options    
+    #blocks[1]['accessory']['options'] = options    
     access_token =None #slack_helper.find_access_token(query['team_id'])
     slack_helper.send_message_to_slack(channel_id,blocks=blocks,access_token=access_token)
     

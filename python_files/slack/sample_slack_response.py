@@ -371,3 +371,191 @@ Formatted JSON Data
 }
 
 '''
+
+
+# view_submission modal 
+
+'''
+{
+   "type":"view_submission",
+   "team":{},
+   "user":{},
+   "api_app_id":"A011W3NBM17",
+   "token":"eeH1pT4oN0byzzkJ35B8mAS1",
+   "trigger_id":"1144773140372.1030610122273.682b5f565f2bf40aa558bd84a57d095a",
+   "view":{
+      "id":"V014SCND48Y",
+      "team_id":"T010WHY3L81",
+      "type":"modal",
+      "blocks":[
+         {
+            "type":"divider",
+            "block_id":"VfIa"
+         },
+         {
+            "type":"input",
+            "block_id":"Date_hai",
+            "label":{
+               "type":"plain_text",
+               "text":"Select leave type (Bal/Avl)",
+               "emoji":True
+            },
+            "optional":False,
+            "element":{
+               "type":"static_select",
+               "action_id":"Date_action_hai",
+               "placeholder":{
+                  "type":"plain_text",
+                  "text":"Select an item",
+                  "emoji":True
+               },
+               "options":[
+                  {
+                     "text":{
+                        "type":"plain_text",
+                        "text":"*this is plain_text text*",
+                        "emoji":True
+                     },
+                     "value":"value-0"
+                  },
+                  {
+                     "text":{
+                        "type":"plain_text",
+                        "text":"*this is plain_text text*",
+                        "emoji":True
+                     },
+                     "value":"value-1"
+                  },
+                  {
+                     "text":{
+                        "type":"plain_text",
+                        "text":"*this is plain_text text*",
+                        "emoji":True
+                     },
+                     "value":"value-2"
+                  }
+               ]
+            }
+         },
+         {
+            "type":"input",
+            "block_id":"uprW",
+            "label":{
+               "type":"plain_text",
+               "text":"Select start date",
+               "emoji":True
+            },
+            "optional":False,
+            "element":{
+               "type":"datepicker",
+               "initial_date":"2020-04-28",
+               "placeholder":{
+                  "type":"plain_text",
+                  "text":"Select a date",
+                  "emoji":True
+               },
+               "action_id":"zMNHZ"
+            }
+         },
+         {
+            "type":"input",
+            "block_id":"nRg",
+            "label":{
+               "type":"plain_text",
+               "text":"Select end date ",
+               "emoji":True
+            },
+            "optional":False,
+            "element":{
+               "type":"datepicker",
+               "initial_date":"2020-04-28",
+               "placeholder":{
+                  "type":"plain_text",
+                  "text":"Select a date",
+                  "emoji":True
+               },
+               "action_id":"GGK"
+            }
+         },
+         {
+            "type":"input",
+            "block_id":"tDSyk",
+            "label":{
+               "type":"plain_text",
+               "text":"Additional Note ?",
+               "emoji":True
+            },
+            "optional":True,
+            "element":{
+               "type":"plain_text_input",
+               "multiline":True,
+               "action_id":"4DgJ"
+            }
+         }
+      ],
+      "private_metadata":"",
+      "callback_id":"",
+      "state":{
+         "values":{
+            "uprW":{
+               "zMNHZ":{
+                  "type":"datepicker",
+                  "selected_date":"2020-04-11"
+               }
+            },
+         "nRg":{
+               "GGK":{
+                  "type":"datepicker",
+                  "selected_date":"2020-04-28"
+               }
+            },
+            "Date_hai":{
+               "Date_action_hai":{
+                  "type":"static_select",
+                  "selected_option":{
+                     "text":{
+                        "type":"plain_text",
+                        "text":"*this is plain_text text*",
+                        "emoji":True
+                     },
+                     "value":"value-1"
+                  }
+               }
+            },
+            "tDSyk":{
+               "4DgJ":{
+                  "type":"plain_text_input"
+               }
+            }
+         }
+      },
+      "hash":"1590080185.b1f1c3ac",
+      "title":{
+         "type":"plain_text",
+         "text":"Apply Leave",
+         "emoji":True
+      },
+      "clear_on_close":False,
+      "notify_on_close":False,
+      "close":{
+         "type":"plain_text",
+         "text":"Cancel",
+         "emoji":True
+      },
+      "submit":{
+         "type":"plain_text",
+         "text":"Submit",
+         "emoji":True
+      },
+      "previous_view_id":"None",
+      "root_view_id":"V014SCND48Y",
+      "app_id":"A011W3NBM17",
+      "external_id":"",
+      "app_installed_team_id":"T010WHY3L81",
+      "bot_id":"B0126QW0AQG"
+   },
+   "response_urls":[
+
+   ]
+}
+'''

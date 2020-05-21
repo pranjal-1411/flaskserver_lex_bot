@@ -9,76 +9,46 @@ import python_files.asanify_server.helper as asanify_helper
 
 def handle_interaction_main( payload ):
     
-    block_id = payload['message']['blocks'][0]['block_id']
-    if block_id == 'ApplyLeave':
-        return interaction_apply_leave(payload)
+    logging.error(f'Payload is {payload}')
+    if payload['type']=='block_actions':
+        
+        block_id = payload['message']['blocks'][0]['block_id']
+        if block_id == 'ApplyLeave':
+            return initiate_apply_leave(payload)
+    
+    if payload['type']=='view_submission':
+        which_modal = payload['view']['blocks'][0]['block_id']
+        
+        if which_modal=='ApplyLeave':
+            return submit_apply_leave(payload)
+                
+    return Response(status=200)
+
+def initiate_apply_leave(payload):
+    trigger_id = payload['trigger_id']
+    file_path = os.path.join( os.getenv('ROOT_PATH'),'python_files/slack/blocks/apply_leave/complete_form.json')
+    view = None
+    with open(file_path,'r') as view_json:
+        view = json.load(view_json)
+    ts = payload['container']['message_ts'] 
+    channel_id = payload['container']['channel_id']
+    view['callback_id'] = channel_id + "," + ts
+    slack.open_modal(trigger_id,view)
     
     return Response(status=200)
 
 
-def interaction_apply_leave(payload):
+def submit_apply_leave(payload):
     
-    channel_id = payload['container']['channel_id']
-    intentName = 'ApplyLeave'
+    values = payload['view']['state']['values']
     
-    ts =payload['container']['message_ts']
-    action = payload['actions'][0] 
-    #logging.error(f'------ ts previous {action["action_ts"]}')
-    blocks = payload['message']['blocks']
-    
-    if action['block_id']=='submit' and action['value'] == 'cancel':
-        slack.update_slack_message(channel_id,ts,text="Cancelled leave application" )
-        return Response(status=200)
-    
-    if action['block_id']=='submit' and action['value']=='submit':
-        slots = getSlotValuesFromLex(intentName,channel_id)
-        
-        leave_id = slots['leave_type']
-        fdate = slots['from_date']
-        tdate = slots['to_date']
-        logging.error(f'{leave_id} {fdate}  {tdate}')
-        response = asanify_helper.send_leave_request_to_asanify(channel_id,fdate,tdate,leave_id)
-        slack.update_slack_message(channel_id,ts,text=response)
-        return Response(status=200)
-    
-    slot_key = action['block_id']
-    slot_value = None
-    blocks_path = os.path.join(os.getenv('ROOT_PATH'),'python_files/slack/blocks/apply_leave')
-    new_blocks = None
-    if slot_key == 'leave_type':
-        slot_value = action['selected_option']['value']
-        received_data = { slot_key:slot_value  }
-        sendSlotValuesToLex(received_data,intentName=intentName,sender_id=channel_id)
-        blocks_path = os.path.join(blocks_path,'from_date.json')
-        with open(blocks_path,'r') as block_json:
-            new_blocks = json.load(block_json)
-    
-    if slot_key == 'from_date':
-        slot_value = action['selected_date']
-        received_data = { slot_key:slot_value  }
-        sendSlotValuesToLex(received_data,intentName=intentName,sender_id=channel_id)
-        blocks_path = os.path.join(blocks_path,'to_date.json')
-        with open(blocks_path,'r') as block_json:
-            new_blocks = json.load(block_json)
-        
-        #blocks[ind]['accessory']["placeholder"] = action['selected_option']['text']
-        
-    if slot_key == 'to_date':
-        slot_value = action['selected_date']
-        received_data = { slot_key:slot_value  }
-        response = sendSlotValuesToLex(received_data,intentName=intentName,sender_id=channel_id)
-        blocks_path = os.path.join(blocks_path,'confirmation.json')
-        with open(blocks_path,'r') as block_json:
-            new_blocks = json.load(block_json)
-        slots = response['slots']
-        final_text = response['message']
-        new_blocks[1]['text']['text'] = final_text
-        
-    slack.update_slack_message(channel_id,ts,text=None ,blocks=new_blocks)
-    
-
-    logging.error( received_data )
-        
+    leave_type = values['leave_type']['leave_type_action']['selected_option']['value']
+    from_date = values['from_date']['from_date_action']['selected_date']
+    to_date = values['to_date']['to_date_action']['selected_date']
+    note = values['additional_note']['additional_note_action']['value']
+    channel_id,ts = payload['view']['callback_id'].split(',')
+    response = asanify_helper.send_leave_request_to_asanify(channel_id,from_date,to_date,leave_type)
+    slack.update_slack_message(channel_id=channel_id,ts=ts,text=response)
     
     return Response(status=200)
 
