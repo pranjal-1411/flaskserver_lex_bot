@@ -1,0 +1,24 @@
+[
+		{	"block_id":"ApplyLeave",
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Apply for Leave"
+			}
+		},
+		{   "block_id":"leave_initiate_button",
+			"type": "actions",
+			"elements": [
+				{	
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"emoji": true,
+						"text": "Apply"
+					},
+					"style": "primary",
+					"value": "click_me_123"
+				}
+			]
+		}
+]

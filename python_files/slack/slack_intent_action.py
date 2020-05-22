@@ -5,27 +5,27 @@ import logging
 import os 
 import json
 
+import python_files.asanify_server.helper as asanify_helper
+
+
+
 def apply_leave(query):
     
     channel_id = query['event']['channel']
     options = get_leave_options( channel_id )
 
-    file_path = os.path.join( os.getenv('ROOT_PATH'),'python_files/slack/blocks/apply_leave/leave_type.json')
+    file_path = os.path.join( os.getenv('ROOT_PATH'),'python_files/slack/blocks/apply_leave/initiate_button.json')
     blocks = None
     
     with open(file_path,'r') as block_json:
         blocks = json.load(block_json)
-    blocks[1]['accessory']['options'] = options    
+    #blocks[1]['accessory']['options'] = options    
     access_token =None #slack_helper.find_access_token(query['team_id'])
     slack_helper.send_message_to_slack(channel_id,blocks=blocks,access_token=access_token)
     
 def get_leave_options( emp_code ):
     
-	url = "https://71f345c7-e619-4430-8261-a751682c1e51.mock.pstmn.io/api/leave/balance/read"
-	js = {
-			"ASAN_EMPCODE": emp_code      
-	}
-	response = requests.post(url=url,json=js)
+	response = asanify_helper.get_leave_balance(emp_code)
 	options = [] 
 	if response.status_code==200:
 		for item in response.json()['LEAVE_BALANCES']:
@@ -66,3 +66,13 @@ def attendanceClockOut(query):
     # url = "https://api.asanify.com/api/attendance/slack/dev/clock"
     # response = requests.post(url,json = js)                     
 
+# url = "https://api.asanify.com/api/attendance/slack/dev/clock"
+
+# js = {
+# "workspace_id":"ABCD",
+# "email":"check@gmail.com",
+# "clock_type":"IN"
+# }
+# response = requests.post(url,json = js)
+# print(response.headers)                         
+# print(response.json()['success'])     
