@@ -1,60 +1,20 @@
 [
-		{   "block_id":"ApplyLeave",
+
+	{   "block_id":"ApplyLeave",
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
 				"text": "*Apply Leave*"
 			}
-		},
-		{   "block_id":"leave_type",
+    },
+    {   "block_id":"final_data",
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "Leave Type(Availaible Quotas)"
-			},
-			"accessory": {
-				"type": "static_select",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Sick",
-					"emoji": true
-				},
-				"options": []
+				"text": null
 			}
-		},
-		{   "block_id":"from_date",
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "Select start date"
-			},
-			"accessory": {
-				"type": "datepicker",
-				"initial_date": "1990-04-28",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Select a date",
-					"emoji": true
-				}
-			}
-		},
-		{   "block_id":"to_date",
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "Select end date."
-			},
-			"accessory": {
-				"type": "datepicker",
-				"initial_date": "1990-04-28",
-				"placeholder": {
-					"type": "plain_text",
-					"text": "Select a date",
-					"emoji": true
-				}
-			}
-		},
-		{   "block_id":"submit",
+    },
+    {   "block_id":"submit",
 			"type": "actions",
 			"elements": [
 				{
@@ -97,4 +57,4 @@
 				}
 			]
 		}
-	]
+]
