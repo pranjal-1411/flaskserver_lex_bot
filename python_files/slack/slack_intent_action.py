@@ -22,25 +22,6 @@ def apply_leave(query):
     #blocks[1]['accessory']['options'] = options    
     access_token =None #slack_helper.find_access_token(query['team_id'])
     slack_helper.send_message_to_slack(channel_id,blocks=blocks,access_token=access_token)
-    
-def get_leave_options( emp_code ):
-    
-	response = asanify_helper.get_leave_balance(emp_code)
-	options = [] 
-	if response.status_code==200:
-		for item in response.json()['LEAVE_BALANCES']:
-			leave = f'{item["POLICY_NAME"]} (Avl: {item["AVAILABLE"]})'
-			sample_option = {
-							"text": {
-								"type": "plain_text",
-								"text": leave,
-								"emoji": True
-							},
-							"value": item["POLICY_ID"]
-						}
-			options.append(sample_option)
-
-	return options
         
 def attendanceClockIn(query):
     pass

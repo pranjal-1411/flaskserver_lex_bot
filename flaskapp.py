@@ -189,7 +189,7 @@ def ms_message():
 
  
 if __name__ == '__main__':
-    app.run(host='localhost',port=3978)
+    app.run(host='localhost')
     
     #app.run(ssl_context='adhoc')
 

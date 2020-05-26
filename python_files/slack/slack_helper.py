@@ -122,7 +122,7 @@ def open_modal( trigger_id,view,access_token=None ):
     slack_client = WebClient(access_token)
     
     response = slack_client.views_open(trigger_id=trigger_id,view=view)
-    logging.error(response)
+    logging.info(response)
 
 def update_slack_message(channel_id,ts, text=None,blocks=None,access_token=None):
     if access_token is None:

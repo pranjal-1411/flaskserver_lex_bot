@@ -9,7 +9,7 @@ import python_files.asanify_server.helper as asanify_helper
 
 def handle_interaction_main( payload ):
     
-    logging.error(f'Payload is {payload}')
+    logging.info(f'Payload is {payload}')
     if payload['type']=='block_actions':
         
         block_id = payload['message']['blocks'][0]['block_id']
@@ -33,10 +33,29 @@ def initiate_apply_leave(payload):
     ts = payload['container']['message_ts'] 
     channel_id = payload['container']['channel_id']
     view['callback_id'] = channel_id + "," + ts
+    #view['blocks'][1]['element']['options'] = get_leave_options(channel_id)
     slack.open_modal(trigger_id,view)
     
     return Response(status=200)
 
+def get_leave_options( emp_code ):
+    
+	response = asanify_helper.get_leave_balance(emp_code)
+	options = [] 
+	if response.status_code==200:
+		for item in response.json()['LEAVE_BALANCES']:
+			leave = f'{item["POLICY_NAME"]} (Avl: {item["AVAILABLE"]})'
+			sample_option = {
+							"text": {
+								"type": "plain_text",
+								"text": leave,
+								"emoji": True
+							},
+							"value": item["POLICY_ID"]
+						}
+			options.append(sample_option)
+
+	return options
 
 def submit_apply_leave(payload):
     
