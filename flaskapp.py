@@ -4,6 +4,7 @@ import python_files.slack.slack_helper as slack
 import python_files.slack.interaction_handler as slack_interaction_handler
 from python_files.aws_helper.lex_helper import generateResponse,createMessageDict
 from python_files.aws_helper.sns_helper import publish_message_from_slack_to_sns
+import python_files.ms_team.helper as ms_helper
 import sys
 import os
 import requests
@@ -134,8 +135,30 @@ def sns():
 
 
     return 'OK\n'
+
+@app.route('/ms/sns', methods = [ 'POST'])
+def ms_sns():
+    # AWS sends JSON with text/plain mimetype
+    try:
+        js = json.loads(request.get_data())
+    except:
+        pass
+    
+    hdr = request.headers.get('X-Amz-Sns-Message-Type')
+  
+    if hdr == 'SubscriptionConfirmation' and 'SubscribeURL' in js:
+        r = requests.get(js['SubscribeURL'])
+    
+    if hdr == 'Notification':
+        message = json.loads(js['Message'])
+        ms_helper._main_process_message(message)
+        #print(type(js['message']))
+
+
+    return 'OK\n'
+    
     
  
 if __name__ == '__main__':
-    app.run(ssl_context='adhoc')
+    app.run()
 

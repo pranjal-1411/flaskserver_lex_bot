@@ -16,13 +16,14 @@ intentName = None
 
 def initEnvironment( rootDir ):
     global botName,botAlias,intentName
+    rootDir='/mnt/f/python3resolve'
     load_dotenv(os.path.join(rootDir, '.env'))
     botName = os.getenv('BOT_NAME')
     botAlias = os.getenv('BOT_ALIAS')
     #intentName = os.getenv('INTENT_NAME')
     os.environ['AWS_ACCESS_KEY_ID'] =  os.getenv('AWS_ACCESS_KEY_ID')
     os.environ['AWS_SECRET_ACCESS_KEY']= os.getenv('AWS_SECRET_ACCESS_KEY')
-    os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
+    #os.environ['AWS_DEFAULT_REGION'] =  os.getenv('AWS_REGION')
 
 
 def generateResponse( message ,rootDir ,query = None ,  source = None ):
